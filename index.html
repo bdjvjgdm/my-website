@@ -44,9 +44,31 @@
         .card { background-color: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
         .drop-zone { border: 2px dashed #cbd5e1; padding: 1rem; min-height: 150px; border-radius: 0.75rem; transition: background-color 0.2s, border-color 0.2s; }
         .drop-zone.drag-over { background-color: #f5f3ff; border-color: #7c3aed; }
-        .student-card { cursor: grab; transition: transform 0.2s; }
+        .student-card { cursor: grab; transition: transform 0.2s; position: relative; }
         .student-card:active { cursor: grabbing; transform: scale(1.05); }
         .student-card.dragging { opacity: 0.5; }
+        .delete-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 24px;
+            height: 24px;
+            background-color: #ef4444; /* red-500 */
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+            border: 2px solid white;
+        }
+        .student-card:hover .delete-btn {
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="bg-gray-200">
@@ -125,22 +147,25 @@
                         <h2 class="text-xl font-semibold text-gray-700">Bảng điểm thi đua</h2>
                         <div class="bg-white p-4 rounded-lg border">
                             <h3 class="font-semibold text-center mb-2 text-gray-600">Chưa xếp tổ</h3>
-                            <div id="unassigned-zone" data-groupid="0" class="drop-zone min-h-[100px]">
-                                <p class="text-gray-400 text-sm text-center">Kéo học sinh vào các tổ bên dưới</p>
+                            <div id="unassigned-zone" data-groupid="0" class="drop-zone min-h-[100px] grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
                             </div>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div id="group-1" data-groupid="1" class="drop-zone bg-white">
+                            <div class="bg-white p-4 rounded-lg border">
                                 <h3 class="font-semibold text-center mb-2 text-gray-800">Tổ 1</h3>
+                                <div id="group-1" data-groupid="1" class="drop-zone grid grid-cols-2 gap-2"></div>
                             </div>
-                            <div id="group-2" data-groupid="2" class="drop-zone bg-white">
+                            <div class="bg-white p-4 rounded-lg border">
                                 <h3 class="font-semibold text-center mb-2 text-gray-800">Tổ 2</h3>
+                                <div id="group-2" data-groupid="2" class="drop-zone grid grid-cols-2 gap-2"></div>
                             </div>
-                            <div id="group-3" data-groupid="3" class="drop-zone bg-white">
+                            <div class="bg-white p-4 rounded-lg border">
                                 <h3 class="font-semibold text-center mb-2 text-gray-800">Tổ 3</h3>
+                                <div id="group-3" data-groupid="3" class="drop-zone grid grid-cols-2 gap-2"></div>
                             </div>
-                             <div id="group-4" data-groupid="4" class="drop-zone bg-white">
+                             <div class="bg-white p-4 rounded-lg border">
                                 <h3 class="font-semibold text-center mb-2 text-gray-800">Tổ 4</h3>
+                                <div id="group-4" data-groupid="4" class="drop-zone grid grid-cols-2 gap-2"></div>
                             </div>
                         </div>
                     </div>
@@ -172,26 +197,31 @@
         </div>
     </div>
     
-    <!-- Modal Xác nhận Xóa Dữ Liệu -->
-    <div id="clear-data-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-        <div class="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-2xl bg-white space-y-6">
-            <div class="text-center">
-                <h3 class="text-2xl font-bold text-gray-900">Xác nhận Xóa Dữ Liệu</h3>
-                <div class="mt-4 px-7 py-3">
-                    <p class="text-md text-gray-600">
-                        Bạn có chắc chắn muốn xóa toàn bộ dữ liệu của tất cả học sinh không?
-                        <br>
-                        <strong class="text-red-600">Hành động này không thể hoàn tác.</strong>
-                    </p>
-                </div>
-                <div class="items-center px-4 py-3 space-x-4">
-                    <button id="confirm-delete-btn" onclick="clearAllData()" class="px-6 py-2 bg-red-600 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                        Xác nhận Xóa
-                    </button>
-                    <button id="cancel-delete-btn" onclick="closeClearDataModal()" class="px-6 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400">
-                        Hủy
-                    </button>
-                </div>
+    <!-- Modal Xác nhận Xóa Toàn Bộ Dữ Liệu -->
+    <div id="clear-data-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center z-50">
+        <div class="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-2xl bg-white space-y-6 text-center">
+            <h3 class="text-2xl font-bold text-gray-900">Xác nhận Xóa Dữ Liệu</h3>
+            <div class="mt-4 px-7 py-3">
+                <p class="text-md text-gray-600">Bạn có chắc chắn muốn xóa TOÀN BỘ dữ liệu học sinh không? <strong class="text-red-600">Hành động này không thể hoàn tác.</strong></p>
+            </div>
+            <div class="items-center px-4 py-3 space-x-4">
+                <button onclick="clearAllData()" class="px-6 py-2 bg-red-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">Xác nhận Xóa</button>
+                <button onclick="closeClearDataModal()" class="px-6 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Xác nhận Xóa Một Học Sinh -->
+    <div id="delete-student-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center z-50">
+        <div class="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-2xl bg-white space-y-6 text-center">
+            <h3 class="text-2xl font-bold text-gray-900">Xác nhận Xóa Học Sinh</h3>
+            <div class="mt-4 px-7 py-3">
+                <p id="delete-student-confirm-text" class="text-md text-gray-600"></p>
+            </div>
+            <div class="items-center px-4 py-3 space-x-4">
+                <button onclick="confirmDeleteStudent()" class="px-6 py-2 bg-red-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">Xóa</button>
+                <button onclick="closeDeleteStudentModal()" class="px-6 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400">Hủy</button>
+                <input type="hidden" id="student-id-to-delete">
             </div>
         </div>
     </div>
@@ -204,7 +234,7 @@
             'to2@gmail.com': { role: 'Tổ 2', groupId: 2 },
             'to3@gmail.com': { role: 'Tổ 3', groupId: 3 },
             'to4@gmail.com': { role: 'Tổ 4', groupId: 4 },
-            'admin@check.com': { role: 'ADMIN', groupId: null } // Admin có thể quản lý tất cả
+            'admin@check.com': { role: 'ADMIN', groupId: null }
         };
         
         let students = [];
@@ -224,6 +254,7 @@
         const userInfo = document.getElementById('user-info');
         const clearDataButton = document.getElementById('clear-data-button');
         const clearDataModal = document.getElementById('clear-data-modal');
+        const deleteStudentModal = document.getElementById('delete-student-modal');
 
         // --- LƯU TRỮ DỮ LIỆU VỚI FIRESTORE ---
         async function saveData() {
@@ -248,14 +279,14 @@
         // --- XÁC THỰC VÀ ĐIỀU HƯỚNG ---
         auth.onAuthStateChanged(user => {
             if (user) {
-                const userData = predefinedUsers[user.email];
+                // SỬA LỖI: Chuyển email về chữ thường để khớp key
+                const userData = predefinedUsers[user.email.toLowerCase()];
                 if (userData) {
                     currentUserRole = userData.role;
                     currentUserGroupId = userData.groupId;
                     userInfo.innerHTML = `<strong>${user.email}</strong> [${currentUserRole}]`;
                 }
 
-                // Hiển thị nút xóa dữ liệu nếu là Admin
                 if (currentUserRole === 'ADMIN') {
                     clearDataButton.classList.remove('hidden');
                 } else {
@@ -271,7 +302,7 @@
                 currentUserRole = null;
                 currentUserGroupId = null;
                 renderStudentList();
-                clearDataButton.classList.add('hidden'); // Ẩn khi đăng xuất
+                clearDataButton.classList.add('hidden');
                 mainPage.classList.add('hidden');
                 summaryPage.classList.add('hidden');
                 loginPage.classList.remove('hidden');
@@ -308,30 +339,31 @@
             await auth.signOut();
         }
 
-        // --- CHỨC NĂNG XÓA DỮ LIỆU ---
-        function openClearDataModal() {
-            clearDataModal.classList.remove('hidden');
-        }
-
-        function closeClearDataModal() {
-            clearDataModal.classList.add('hidden');
-        }
+        // --- CHỨC NĂNG QUẢN LÝ DỮ LIỆU (ADMIN) ---
+        function openClearDataModal() { clearDataModal.classList.remove('hidden'); }
+        function closeClearDataModal() { clearDataModal.classList.add('hidden'); }
 
         async function clearAllData() {
-            const confirmBtn = document.getElementById('confirm-delete-btn');
-            confirmBtn.disabled = true;
-            confirmBtn.textContent = 'Đang xóa...';
-            try {
-                await dataDocRef().set({ students: [] });
-                console.log("Dữ liệu đã được xóa thành công.");
-            } catch (error) {
-                console.error("Lỗi khi xóa dữ liệu:", error);
-                alert("Đã có lỗi xảy ra khi cố gắng xóa dữ liệu.");
-            } finally {
-                confirmBtn.disabled = false;
-                confirmBtn.textContent = 'Xác nhận Xóa';
-                closeClearDataModal();
+            await dataDocRef().set({ students: [] });
+            closeClearDataModal();
+        }
+
+        function openDeleteStudentModal(studentId) {
+            const student = students.find(s => s.id === studentId);
+            if(student) {
+                document.getElementById('delete-student-confirm-text').innerHTML = `Bạn có chắc muốn xóa học sinh <br><strong class="text-lg">${student.name} (${student.id})</strong>?`;
+                document.getElementById('student-id-to-delete').value = studentId;
+                deleteStudentModal.classList.remove('hidden');
             }
+        }
+
+        function closeDeleteStudentModal() { deleteStudentModal.classList.add('hidden'); }
+        
+        async function confirmDeleteStudent() {
+            const studentId = document.getElementById('student-id-to-delete').value;
+            students = students.filter(s => s.id !== studentId);
+            await saveData();
+            closeDeleteStudentModal();
         }
         
         // --- CÁC HÀM XỬ LÝ SỰ KIỆN CHÍNH ---
@@ -351,7 +383,6 @@
             const newId = `HS${maxId + 1}`;
 
             students.push({ id: newId, name, group: 0, score: 0 });
-
             nameInput.value = '';
             nameInput.focus();
             await saveData();
@@ -365,14 +396,14 @@
             
             addPointsError.classList.add('hidden');
             if (!studentId || isNaN(points)) {
-                addPointsError.textContent = 'Vui lòng nhập Mã học sinh và Điểm cộng hợp lệ.';
+                addPointsError.textContent = 'Vui lòng nhập Mã và Điểm hợp lệ.';
                 addPointsError.classList.remove('hidden');
                 return;
             }
             
             const student = students.find(s => s.id === studentId);
             if (!student) {
-                addPointsError.textContent = `Không tìm thấy học sinh với mã "${studentId}".`;
+                addPointsError.textContent = `Không tìm thấy học sinh mã "${studentId}".`;
                 addPointsError.classList.remove('hidden');
                 return;
             }
@@ -381,7 +412,7 @@
             const canAddPoints = isAdmin || (student.group === currentUserGroupId);
 
             if (!canAddPoints) {
-                 addPointsError.textContent = `Bạn không có quyền cộng điểm cho học sinh ở Tổ ${student.group}.`;
+                 addPointsError.textContent = `Bạn không có quyền cộng điểm cho Tổ ${student.group}.`;
                  addPointsError.classList.remove('hidden');
                  return;
             }
@@ -396,10 +427,8 @@
         async function handleDrop(event) {
             event.preventDefault();
             event.currentTarget.classList.remove('drag-over');
-            
             const studentId = event.dataTransfer.getData('text/plain');
             const newGroupId = parseInt(event.currentTarget.dataset.groupid, 10);
-            
             const student = students.find(s => s.id === studentId);
             if (student && student.group !== newGroupId) {
                 student.group = newGroupId;
@@ -414,7 +443,6 @@
             }
             const sortedStudents = [...students].sort((a, b) => b.score - a.score);
             const top10 = sortedStudents.slice(0, 10);
-            
             renderTop10List(top10);
             mainPage.classList.add('hidden');
             summaryPage.classList.remove('hidden');
@@ -429,19 +457,12 @@
             event.dataTransfer.setData('text/plain', event.target.id);
             setTimeout(() => { event.target.classList.add('dragging'); }, 0);
         }
-
-        function handleDragEnd(event) {
-            event.target.classList.remove('dragging');
-        }
-
+        function handleDragEnd(event) { event.target.classList.remove('dragging'); }
         function handleDragOver(event) {
             event.preventDefault();
             event.currentTarget.classList.add('drag-over');
         }
-
-        function handleDragLeave(event) {
-            event.currentTarget.classList.remove('drag-over');
-        }
+        function handleDragLeave(event) { event.currentTarget.classList.remove('drag-over'); }
         
         document.querySelectorAll('.drop-zone').forEach(zone => {
             zone.addEventListener('dragover', handleDragOver);
@@ -452,18 +473,24 @@
         // --- CÁC HÀM HIỂN THỊ DỮ LIỆU (RENDER) ---
         function renderStudentList() {
             document.querySelectorAll('.student-card').forEach(card => card.remove());
-            const unassignedZone = document.getElementById('unassigned-zone');
-            const defaultMsg = unassignedZone.querySelector('p');
-
+            
             students.forEach(student => {
                 const studentCard = document.createElement('div');
                 studentCard.id = student.id;
-                studentCard.className = 'student-card p-2 bg-gray-100 rounded-md text-center border shadow-sm mt-2';
+                studentCard.className = 'student-card p-2 bg-gray-100 rounded-md text-center border shadow-sm';
                 studentCard.draggable = true;
+
+                let deleteButtonHTML = '';
+                // THÊM MỚI: Chỉ Admin mới thấy nút xóa
+                if (currentUserRole === 'ADMIN') {
+                    deleteButtonHTML = `<div class="delete-btn" onclick="openDeleteStudentModal('${student.id}')" title="Xóa học sinh">×</div>`;
+                }
+
                 studentCard.innerHTML = `
                     <div class="font-bold text-gray-800 text-sm">${student.id}</div>
                     <div class="text-gray-600 text-xs truncate" title="${student.name}">${student.name}</div>
                     <div class="text-violet-600 font-semibold">${student.score}đ</div>
+                    ${deleteButtonHTML}
                 `;
                 studentCard.addEventListener('dragstart', handleDragStart);
                 studentCard.addEventListener('dragend', handleDragEnd);
@@ -473,12 +500,6 @@
                     targetZone.appendChild(studentCard);
                 }
             });
-
-            if (unassignedZone.querySelectorAll('.student-card').length === 0) {
-                 if (defaultMsg) defaultMsg.style.display = 'block';
-            } else {
-                 if (defaultMsg) defaultMsg.style.display = 'none';
-            }
         }
         
         function renderTop10List(top10) {
