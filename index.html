@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hệ Thống Quản Lý Điểm Thi Đua</title>
+    <!-- Tích hợp Tailwind CSS để làm đẹp giao diện -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* CSS tùy chỉnh cho ảnh nền và font chữ */
+      body {
+        font-family: "Inter", sans-serif;
+        /* Background được cập nhật theo yêu cầu */
+        background-image: url("https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+      }
+      /* Hiệu ứng mờ cho các card, giúp nổi bật nội dung */
+      .card {
+        background-color: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+      }
+      /* CSS cho chức năng kéo thả */
+      .drop-zone {
+        border: 2px dashed #cbd5e1;
+        padding: 1rem;
+        min-height: 150px;
+        border-radius: 0.75rem;
+        transition: background-color 0.2s, border-color 0.2s;
+      }
+      .drop-zone.drag-over {
+        background-color: #f5f3ff; /* light violet */
+        border-color: #7c3aed; /* violet */
+      }
+      .student-card {
+        cursor: grab;
+        transition: transform 0.2s;
+      }
+      .student-card:active {
+        cursor: grabbing;
+        transform: scale(1.05);
+      }
+      .student-card.dragging {
+        opacity: 0.5;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-200">
+    <div class="min-h-screen flex items-center justify-center p-4">
+      <!-- Trang Đăng Nhập (Hiển thị mặc định) -->
+      <div id="login-page" class="w-full max-w-md">
+        <div class="card shadow-2xl rounded-2xl p-8 space-y-6">
+          <div class="text-center">
+            <h1 class="text-3xl font-bold text-gray-800">Đăng Nhập Hệ Thống</h1>
+            <p class="text-gray-600 mt-2">Dành cho cán bộ quản lý học tập</p>
+          </div>
+          <div id="login-error" class="text-red-500 text-sm text-center hidden">
+            Tên đăng nhập hoặc mật khẩu không được để trống.
+          </div>
+          <div class="space-y-4">
+            <div>
+              <label
+                for="username"
+                class="block text-sm font-medium text-gray-700"
+                >Tên đăng nhập</label
+              >
+              <input
+                type="text"
+                id="username"
+                name="username"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-violet-500 focus:border-violet-500"
+                placeholder="ví dụ: admin"
+              />
+            </div>
+            <div>
+              <label
+                for="password"
+                class="block text-sm font-medium text-gray-700"
+                >Mật khẩu</label
+              >
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-violet-500 focus:border-violet-500"
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+          <button
+            onclick="handleLogin()"
+            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 transition-transform transform hover:scale-105"
+          >
+            Đăng Nhập
+          </button>
+        </div>
+      </div>
+
+      <!-- Trang Chính - Quản Lý (Mặc định bị ẩn) -->
+      <div id="main-page" class="hidden w-full max-w-6xl">
+        <div class="card shadow-2xl rounded-2xl p-8 space-y-8">
+          <div class="flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-gray-800">
+              Trang Quản Lý Thi Đua
+            </h1>
+            <button
+              onclick="handleLogout()"
+              class="text-sm font-medium text-violet-600 hover:text-violet-500"
+            >
+              Đăng xuất
+            </button>
+          </div>
+
+          <!-- Cột chức năng -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-1 space-y-6">
+              <!-- Phần thêm học sinh -->
+              <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">
+                  1. Thêm học sinh
+                </h2>
+                <div
+                  id="add-student-error"
+                  class="text-red-500 text-sm mb-2 hidden"
+                ></div>
+                <div class="flex flex-col sm:flex-row gap-4 items-end">
+                  <div class="w-full">
+                    <label
+                      for="student-name"
+                      class="block text-sm font-medium text-gray-700"
+                      >Nhập tên học sinh</label
+                    >
+                    <input
+                      type="text"
+                      id="student-name"
+                      class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-violet-500 focus:border-violet-500"
+                      placeholder="ví dụ: Nguyễn Văn An"
+                    />
+                  </div>
+                  <button
+                    onclick="addStudent()"
+                    class="w-full sm:w-auto whitespace-nowrap px-6 py-2 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500"
+                  >
+                    Thêm
+                  </button>
+                </div>
+              </div>
+
+              <!-- Phần nhập điểm -->
+              <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">
+                  2. Cộng điểm thi đua
+                </h2>
+                <div
+                  id="add-points-error"
+                  class="text-red-500 text-sm mb-2 hidden"
+                ></div>
+                <div class="grid grid-cols-1 gap-4 items-end">
+                  <div>
+                    <label
+                      for="student-id"
+                      class="block text-sm font-medium text-gray-700"
+                      >Mã học sinh</label
+                    >
+                    <input
+                      type="text"
+                      id="student-id"
+                      class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-violet-500 focus:border-violet-500"
+                      placeholder="ví dụ: HS1"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="points-to-add"
+                      class="block text-sm font-medium text-gray-700"
+                      >Số điểm cộng</label
+                    >
+                    <input
+                      type="number"
+                      id="points-to-add"
+                      class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-violet-500 focus:border-violet-500"
+                      placeholder="ví dụ: 10"
+                    />
+                  </div>
+                  <button
+                    onclick="addPoints()"
+                    class="w-full px-6 py-2 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500"
+                  >
+                    Thêm Điểm
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bảng điểm và các tổ -->
+            <div class="lg:col-span-2 space-y-6">
+              <h2 class="text-xl font-semibold text-gray-700">
+                Bảng điểm thi đua
+              </h2>
+
+              <!-- Khu vực chưa xếp tổ -->
+              <div class="bg-white p-4 rounded-lg border">
+                <h3 class="font-semibold text-center mb-2 text-gray-600">
+                  Chưa xếp tổ
+                </h3>
+                <div
+                  id="unassigned-zone"
+                  data-groupid="0"
+                  class="drop-zone min-h-[100px]"
+                >
+                  <!-- Học sinh chưa xếp tổ sẽ ở đây -->
+                  <p class="text-gray-400 text-sm text-center">
+                    Kéo học sinh vào các tổ bên dưới
+                  </p>
+                </div>
+              </div>
+
+              <!-- Các tổ -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div id="group-1" data-groupid="1" class="drop-zone bg-white">
+                  <h3 class="font-semibold text-center mb-2 text-gray-800">
+                    Tổ 1
+                  </h3>
+                </div>
+                <div id="group-2" data-groupid="2" class="drop-zone bg-white">
+                  <h3 class="font-semibold text-center mb-2 text-gray-800">
+                    Tổ 2
+                  </h3>
+                </div>
+                <div id="group-3" data-groupid="3" class="drop-zone bg-white">
+                  <h3 class="font-semibold text-center mb-2 text-gray-800">
+                    Tổ 3
+                  </h3>
+                </div>
+                <div id="group-4" data-groupid="4" class="drop-zone bg-white">
+                  <h3 class="font-semibold text-center mb-2 text-gray-800">
+                    Tổ 4
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nút tổng kết -->
+          <div class="pt-6 border-t border-gray-200 text-center">
+            <button
+              onclick="showSummary()"
+              class="w-full max-w-xs mx-auto py-3 px-4 border border-transparent rounded-lg shadow-lg text-sm font-bold text-gray-800 bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 transition-transform transform hover:scale-105"
+            >
+              Tổng Kết Tuần
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trang Tổng Kết (Mặc định bị ẩn) -->
+      <div id="summary-page" class="hidden w-full max-w-2xl">
+        <div class="card shadow-2xl rounded-2xl p-8 space-y-6">
+          <h1 class="text-3xl font-bold text-center text-gray-800">
+            Bảng Xếp Hạng Tuần
+          </h1>
+          <p class="text-center text-gray-600">
+            Top 10 học sinh có điểm thi đua cao nhất.
+          </p>
+          <div id="top-10-list-container" class="space-y-4"></div>
+          <div class="text-center pt-4">
+            <button
+              onclick="goBackToMain()"
+              class="px-6 py-2 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            >
+              Quay Lại Trang Quản Lý
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // --- KHAI BÁO BIẾN TOÀN CỤC ---
+      let students = []; // Mảng dữ liệu [{id, name, group, score}, ...] (group 0 là chưa xếp)
+
+      // Lấy các phần tử DOM
+      const loginPage = document.getElementById("login-page");
+      const mainPage = document.getElementById("main-page");
+      const summaryPage = document.getElementById("summary-page");
+      const loginError = document.getElementById("login-error");
+      const addStudentError = document.getElementById("add-student-error");
+      const addPointsError = document.getElementById("add-points-error");
+      const top10ListContainer = document.getElementById(
+        "top-10-list-container"
+      );
+
+      // --- CÁC HÀM XỬ LÝ SỰ KIỆN CHÍNH ---
+      function handleLogin() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        if (username.trim() === "" || password.trim() === "") {
+          loginError.classList.remove("hidden");
+          return;
+        }
+        loginError.classList.add("hidden");
+        loginPage.classList.add("hidden");
+        mainPage.classList.remove("hidden");
+      }
+
+      function handleLogout() {
+        students = [];
+        renderStudentList();
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+        mainPage.classList.add("hidden");
+        summaryPage.classList.add("hidden");
+        loginPage.classList.remove("hidden");
+      }
+
+      function addStudent() {
+        const nameInput = document.getElementById("student-name");
+        const name = nameInput.value.trim();
+
+        addStudentError.classList.add("hidden");
+        if (!name) {
+          addStudentError.textContent = "Tên học sinh không được để trống.";
+          addStudentError.classList.remove("hidden");
+          return;
+        }
+
+        const newId = `HS${students.length + 1}`;
+        students.push({ id: newId, name, group: 0, score: 0 });
+
+        nameInput.value = "";
+        nameInput.focus();
+        renderStudentList();
+      }
+
+      function addPoints() {
+        const studentIdInput = document.getElementById("student-id");
+        const pointsInput = document.getElementById("points-to-add");
+        const studentId = studentIdInput.value.trim().toUpperCase();
+        const points = parseInt(pointsInput.value, 10);
+
+        addPointsError.classList.add("hidden");
+        if (!studentId || isNaN(points)) {
+          addPointsError.textContent =
+            "Vui lòng nhập đầy đủ Mã học sinh và Điểm cộng.";
+          addPointsError.classList.remove("hidden");
+          return;
+        }
+
+        const student = students.find((s) => s.id === studentId);
+        if (!student) {
+          addPointsError.textContent = `Không tìm thấy học sinh với mã "${studentId}".`;
+          addPointsError.classList.remove("hidden");
+          return;
+        }
+
+        student.score += points;
+        studentIdInput.value = "";
+        pointsInput.value = "";
+        renderStudentList();
+      }
+
+      function showSummary() {
+        if (students.length === 0) {
+          alert("Chưa có dữ liệu học sinh để tổng kết.");
+          return;
+        }
+        const sortedStudents = [...students].sort((a, b) => b.score - a.score);
+        const top10 = sortedStudents.slice(0, 10);
+
+        renderTop10List(top10);
+        mainPage.classList.add("hidden");
+        summaryPage.classList.remove("hidden");
+      }
+
+      function goBackToMain() {
+        summaryPage.classList.add("hidden");
+        mainPage.classList.remove("hidden");
+      }
+
+      // --- CÁC HÀM KÉO THẢ ---
+      function handleDragStart(event) {
+        event.dataTransfer.setData("text/plain", event.target.id);
+        setTimeout(() => {
+          event.target.classList.add("dragging");
+        }, 0);
+      }
+
+      function handleDragEnd(event) {
+        event.target.classList.remove("dragging");
+      }
+
+      function handleDragOver(event) {
+        event.preventDefault();
+        event.currentTarget.classList.add("drag-over");
+      }
+
+      function handleDragLeave(event) {
+        event.currentTarget.classList.remove("drag-over");
+      }
+
+      function handleDrop(event) {
+        event.preventDefault();
+        event.currentTarget.classList.remove("drag-over");
+
+        const studentId = event.dataTransfer.getData("text/plain");
+        const newGroupId = parseInt(event.currentTarget.dataset.groupid, 10);
+
+        const student = students.find((s) => s.id === studentId);
+        if (student) {
+          student.group = newGroupId;
+          renderStudentList();
+        }
+      }
+
+      // Gắn sự kiện cho các drop zone
+      document.querySelectorAll(".drop-zone").forEach((zone) => {
+        zone.addEventListener("dragover", handleDragOver);
+        zone.addEventListener("dragleave", handleDragLeave);
+        zone.addEventListener("drop", handleDrop);
+      });
+
+      // --- CÁC HÀM HIỂN THỊ DỮ LIỆU (RENDER) ---
+      function renderStudentList() {
+        // Xóa tất cả học sinh hiện có trên giao diện
+        document
+          .querySelectorAll(".student-card")
+          .forEach((card) => card.remove());
+        // Xóa thông báo mặc định
+        const defaultMsg = document.querySelector("#unassigned-zone p");
+        if (defaultMsg) defaultMsg.style.display = "none";
+
+        if (students.length === 0) {
+          if (defaultMsg) defaultMsg.style.display = "block";
+          return;
+        }
+
+        students.forEach((student) => {
+          const studentCard = document.createElement("div");
+          studentCard.id = student.id;
+          studentCard.className =
+            "student-card p-2 bg-gray-100 rounded-md text-center border shadow-sm mt-2";
+          studentCard.draggable = true;
+          studentCard.innerHTML = `
+                    <div class="font-bold text-gray-800 text-sm">${student.id}</div>
+                    <div class="text-gray-600 text-xs truncate" title="${student.name}">${student.name}</div>
+                    <div class="text-violet-600 font-semibold">${student.score}đ</div>
+                `;
+          studentCard.addEventListener("dragstart", handleDragStart);
+          studentCard.addEventListener("dragend", handleDragEnd);
+
+          const targetZone = document.querySelector(
+            `.drop-zone[data-groupid="${student.group}"]`
+          );
+          if (targetZone) {
+            targetZone.appendChild(studentCard);
+          }
+        });
+      }
+
+      function renderTop10List(top10) {
+        top10ListContainer.innerHTML = "";
+        if (top10.length === 0) {
+          top10ListContainer.innerHTML =
+            '<p class="text-gray-500 text-center">Không có dữ liệu.</p>';
+          return;
+        }
+
+        const medals = ["🥇", "🥈", "🥉"];
+        top10.forEach((student, index) => {
+          const rankItem = document.createElement("div");
+          rankItem.className = "flex items-center p-4 rounded-lg border";
+
+          let rankContent;
+          if (index < 3) {
+            rankItem.className += " bg-yellow-50 border-yellow-200";
+            rankContent = `<div class="text-3xl w-10 text-center">${medals[index]}</div>`;
+          } else {
+            rankItem.className += " bg-gray-50 border-gray-200";
+            rankContent = `<div class="text-xl font-bold text-gray-500 w-10 text-center">${
+              index + 1
+            }</div>`;
+          }
+
+          const groupText =
+            student.group === 0 ? "Chưa xếp" : `Tổ ${student.group}`;
+
+          rankItem.innerHTML = `
+                    ${rankContent}
+                    <div class="ml-4 flex-grow">
+                        <p class="font-bold text-gray-800 text-lg">${student.name}</p>
+                        <p class="text-sm text-gray-500">${student.id} - ${groupText}</p>
+                    </div>
+                    <div class="text-xl font-bold text-violet-600">${student.score} điểm</div>
+                `;
+          top10ListContainer.appendChild(rankItem);
+        });
+      }
+    </script>
+  </body>
+</html>
