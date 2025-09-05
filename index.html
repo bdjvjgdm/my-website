@@ -12,22 +12,42 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Tải các thư viện Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+    <!-- Khởi tạo Firebase sau khi tải SDK -->
+    <script>
+      // Cấu hình Firebase đã được cập nhật
+      const firebaseConfig = {
+        apiKey: "AIzaSyDaeedEmbpGg_rr2ln13lWsXKY-opoy36E",
+        authDomain: "quanlydiem-c2820.firebaseapp.com",
+        projectId: "quanlydiem-c2820",
+        storageBucket: "quanlydiem-c2820.appspot.com",
+        messagingSenderId: "912711399959",
+        appId: "1:912711399959:web:08e5897d6b958c1371fa52",
+      };
+
+      // Khởi tạo các dịch vụ Firebase
+      firebase.initializeApp(firebaseConfig);
+      window.db = firebase.firestore();
+      window.auth = firebase.auth();
+    </script>
+
     <style>
-      /* CSS tùy chỉnh cho ảnh nền và font chữ */
       body {
         font-family: "Inter", sans-serif;
-        /* Background được cập nhật theo yêu cầu */
-        background-image: url("https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+        background-image: url("https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
       }
-      /* Hiệu ứng mờ cho các card, giúp nổi bật nội dung */
       .card {
         background-color: rgba(255, 255, 255, 0.9);
         backdrop-filter: blur(10px);
       }
-      /* CSS cho chức năng kéo thả */
       .drop-zone {
         border: 2px dashed #cbd5e1;
         padding: 1rem;
@@ -36,8 +56,8 @@
         transition: background-color 0.2s, border-color 0.2s;
       }
       .drop-zone.drag-over {
-        background-color: #f5f3ff; /* light violet */
-        border-color: #7c3aed; /* violet */
+        background-color: #f5f3ff;
+        border-color: #7c3aed;
       }
       .student-card {
         cursor: grab;
@@ -54,29 +74,23 @@
   </head>
   <body class="bg-gray-200">
     <div class="min-h-screen flex items-center justify-center p-4">
-      <!-- Trang Đăng Nhập (Hiển thị mặc định) -->
+      <!-- Trang Đăng Nhập -->
       <div id="login-page" class="w-full max-w-md">
         <div class="card shadow-2xl rounded-2xl p-8 space-y-6">
           <div class="text-center">
             <h1 class="text-3xl font-bold text-gray-800">Đăng Nhập Hệ Thống</h1>
             <p class="text-gray-600 mt-2">Dành cho cán bộ quản lý học tập</p>
           </div>
-          <div id="login-error" class="text-red-500 text-sm text-center hidden">
-            Tên đăng nhập hoặc mật khẩu không được để trống.
-          </div>
           <div class="space-y-4">
             <div>
-              <label
-                for="username"
-                class="block text-sm font-medium text-gray-700"
-                >Tên đăng nhập</label
+              <label for="email" class="block text-sm font-medium text-gray-700"
+                >Tên đăng nhập (Email)</label
               >
               <input
-                type="text"
-                id="username"
-                name="username"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-violet-500 focus:border-violet-500"
-                placeholder="ví dụ: admin"
+                type="email"
+                id="email"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-violet-500 focus:border-violet-500"
+                placeholder="ví dụ: to1@app.com"
               />
             </div>
             <div>
@@ -88,11 +102,13 @@
               <input
                 type="password"
                 id="password"
-                name="password"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-violet-500 focus:border-violet-500"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-violet-500 focus:border-violet-500"
                 placeholder="••••••••"
               />
             </div>
+          </div>
+          <div id="login-error" class="text-red-500 text-sm text-center hidden">
+            Tên đăng nhập hoặc mật khẩu không hợp lệ.
           </div>
           <button
             onclick="handleLogin()"
@@ -103,25 +119,29 @@
         </div>
       </div>
 
-      <!-- Trang Chính - Quản Lý (Mặc định bị ẩn) -->
+      <!-- Trang Chính - Quản Lý -->
       <div id="main-page" class="hidden w-full max-w-6xl">
         <div class="card shadow-2xl rounded-2xl p-8 space-y-8">
-          <div class="flex justify-between items-center">
+          <div class="flex justify-between items-center flex-wrap gap-4">
             <h1 class="text-3xl font-bold text-gray-800">
               Trang Quản Lý Thi Đua
             </h1>
-            <button
-              onclick="handleLogout()"
-              class="text-sm font-medium text-violet-600 hover:text-violet-500"
-            >
-              Đăng xuất
-            </button>
+            <div class="text-right">
+              <div
+                id="user-info"
+                class="text-sm font-medium text-gray-700"
+              ></div>
+              <button
+                onclick="handleLogout()"
+                class="text-sm font-medium text-violet-600 hover:text-violet-500"
+              >
+                Đăng xuất
+              </button>
+            </div>
           </div>
 
-          <!-- Cột chức năng -->
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-1 space-y-6">
-              <!-- Phần thêm học sinh -->
               <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">
                   1. Thêm học sinh
@@ -152,8 +172,6 @@
                   </button>
                 </div>
               </div>
-
-              <!-- Phần nhập điểm -->
               <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">
                   2. Cộng điểm thi đua
@@ -198,14 +216,10 @@
                 </div>
               </div>
             </div>
-
-            <!-- Bảng điểm và các tổ -->
             <div class="lg:col-span-2 space-y-6">
               <h2 class="text-xl font-semibold text-gray-700">
                 Bảng điểm thi đua
               </h2>
-
-              <!-- Khu vực chưa xếp tổ -->
               <div class="bg-white p-4 rounded-lg border">
                 <h3 class="font-semibold text-center mb-2 text-gray-600">
                   Chưa xếp tổ
@@ -215,14 +229,11 @@
                   data-groupid="0"
                   class="drop-zone min-h-[100px]"
                 >
-                  <!-- Học sinh chưa xếp tổ sẽ ở đây -->
                   <p class="text-gray-400 text-sm text-center">
                     Kéo học sinh vào các tổ bên dưới
                   </p>
                 </div>
               </div>
-
-              <!-- Các tổ -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div id="group-1" data-groupid="1" class="drop-zone bg-white">
                   <h3 class="font-semibold text-center mb-2 text-gray-800">
@@ -247,8 +258,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Nút tổng kết -->
           <div class="pt-6 border-t border-gray-200 text-center">
             <button
               onclick="showSummary()"
@@ -260,7 +269,7 @@
         </div>
       </div>
 
-      <!-- Trang Tổng Kết (Mặc định bị ẩn) -->
+      <!-- Trang Tổng Kết -->
       <div id="summary-page" class="hidden w-full max-w-2xl">
         <div class="card shadow-2xl rounded-2xl p-8 space-y-6">
           <h1 class="text-3xl font-bold text-center text-gray-800">
@@ -283,10 +292,22 @@
     </div>
 
     <script>
-      // --- KHAI BÁO BIẾN TOÀN CỤC ---
-      let students = []; // Mảng dữ liệu [{id, name, group, score}, ...] (group 0 là chưa xếp)
+      // --- CẤU HÌNH VÀ BIẾN TOÀN CỤC ---
+      const predefinedUsers = {
+        "to1@app.com": { role: "Tổ 1", groupId: 1 },
+        "to2@app.com": { role: "Tổ 2", groupId: 2 },
+        "to3@app.com": { role: "Tổ 3", groupId: 3 },
+        "to4@app.com": { role: "Tổ 4", groupId: 4 },
+        "admin@app.com": { role: "ADMIN", groupId: null }, // Admin có thể quản lý tất cả
+      };
 
-      // Lấy các phần tử DOM
+      let students = [];
+      let unsubscribe;
+      let currentUserRole = null;
+      let currentUserGroupId = null;
+
+      const dataDocRef = () => db.collection("classes").doc("mainClass");
+
       const loginPage = document.getElementById("login-page");
       const mainPage = document.getElementById("main-page");
       const summaryPage = document.getElementById("summary-page");
@@ -296,31 +317,91 @@
       const top10ListContainer = document.getElementById(
         "top-10-list-container"
       );
+      const userInfo = document.getElementById("user-info");
 
-      // --- CÁC HÀM XỬ LÝ SỰ KIỆN CHÍNH ---
-      function handleLogin() {
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
-        if (username.trim() === "" || password.trim() === "") {
+      // --- LƯU TRỮ DỮ LIỆU VỚI FIRESTORE ---
+      async function saveData() {
+        try {
+          await dataDocRef().set({ students: students });
+        } catch (error) {
+          console.error("Lỗi khi lưu dữ liệu: ", error);
+          alert("Đã có lỗi xảy ra khi lưu dữ liệu.");
+        }
+      }
+
+      function listenForDataChanges() {
+        if (unsubscribe) unsubscribe();
+        unsubscribe = dataDocRef().onSnapshot(
+          (doc) => {
+            students = doc.exists ? doc.data().students || [] : [];
+            renderStudentList();
+          },
+          (error) => {
+            console.error("Lỗi khi lắng nghe dữ liệu:", error);
+          }
+        );
+      }
+
+      // --- XÁC THỰC VÀ ĐIỀU HƯỚNG ---
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          const userData = predefinedUsers[user.email];
+          if (userData) {
+            currentUserRole = userData.role;
+            currentUserGroupId = userData.groupId;
+            userInfo.innerHTML = `<strong>${user.email}</strong> [${currentUserRole}]`;
+          }
+          loginPage.classList.add("hidden");
+          mainPage.classList.remove("hidden");
+          listenForDataChanges();
+        } else {
+          if (unsubscribe) unsubscribe();
+          students = [];
+          currentUserRole = null;
+          currentUserGroupId = null;
+          renderStudentList();
+          mainPage.classList.add("hidden");
+          summaryPage.classList.add("hidden");
+          loginPage.classList.remove("hidden");
+        }
+      });
+
+      async function handleLogin() {
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        loginError.classList.add("hidden");
+
+        if (!email || !password) {
+          loginError.textContent = "Vui lòng nhập đầy đủ email và mật khẩu.";
           loginError.classList.remove("hidden");
           return;
         }
-        loginError.classList.add("hidden");
-        loginPage.classList.add("hidden");
-        mainPage.classList.remove("hidden");
+
+        try {
+          await auth.signInWithEmailAndPassword(email, password);
+        } catch (error) {
+          console.error("Lỗi đăng nhập:", error);
+          if (
+            error.code === "auth/wrong-password" ||
+            error.code === "auth/user-not-found"
+          ) {
+            loginError.textContent =
+              "Tên đăng nhập hoặc mật khẩu không chính xác.";
+          } else {
+            loginError.textContent = `Lỗi: ${error.message}`;
+          }
+          loginError.classList.remove("hidden");
+        }
       }
 
-      function handleLogout() {
-        students = [];
-        renderStudentList();
-        document.getElementById("username").value = "";
-        document.getElementById("password").value = "";
-        mainPage.classList.add("hidden");
-        summaryPage.classList.add("hidden");
-        loginPage.classList.remove("hidden");
+      async function handleLogout() {
+        await auth.signOut();
       }
 
-      function addStudent() {
+      // --- CÁC HÀM XỬ LÝ SỰ KIỆN CHÍNH ---
+      async function addStudent() {
         const nameInput = document.getElementById("student-name");
         const name = nameInput.value.trim();
 
@@ -331,15 +412,20 @@
           return;
         }
 
-        const newId = `HS${students.length + 1}`;
+        const existingIds = students.map((s) =>
+          parseInt(s.id.replace("HS", ""), 10)
+        );
+        const maxId = existingIds.length > 0 ? Math.max(...existingIds) : 0;
+        const newId = `HS${maxId + 1}`;
+
         students.push({ id: newId, name, group: 0, score: 0 });
 
         nameInput.value = "";
         nameInput.focus();
-        renderStudentList();
+        await saveData();
       }
 
-      function addPoints() {
+      async function addPoints() {
         const studentIdInput = document.getElementById("student-id");
         const pointsInput = document.getElementById("points-to-add");
         const studentId = studentIdInput.value.trim().toUpperCase();
@@ -348,7 +434,7 @@
         addPointsError.classList.add("hidden");
         if (!studentId || isNaN(points)) {
           addPointsError.textContent =
-            "Vui lòng nhập đầy đủ Mã học sinh và Điểm cộng.";
+            "Vui lòng nhập Mã học sinh và Điểm cộng hợp lệ.";
           addPointsError.classList.remove("hidden");
           return;
         }
@@ -360,10 +446,35 @@
           return;
         }
 
+        // --- KIỂM TRA QUYỀN TRƯỚC KHI CỘNG ĐIỂM ---
+        const isAdmin = currentUserRole === "ADMIN";
+        const canAddPoints = isAdmin || student.group === currentUserGroupId;
+
+        if (!canAddPoints) {
+          addPointsError.textContent = `Bạn không có quyền cộng điểm cho học sinh ở Tổ ${student.group}.`;
+          addPointsError.classList.remove("hidden");
+          return;
+        }
+
         student.score += points;
         studentIdInput.value = "";
         pointsInput.value = "";
-        renderStudentList();
+        await saveData();
+      }
+
+      // --- KÉO THẢ ---
+      async function handleDrop(event) {
+        event.preventDefault();
+        event.currentTarget.classList.remove("drag-over");
+
+        const studentId = event.dataTransfer.getData("text/plain");
+        const newGroupId = parseInt(event.currentTarget.dataset.groupid, 10);
+
+        const student = students.find((s) => s.id === studentId);
+        if (student && student.group !== newGroupId) {
+          student.group = newGroupId;
+          await saveData();
+        }
       }
 
       function showSummary() {
@@ -384,7 +495,6 @@
         mainPage.classList.remove("hidden");
       }
 
-      // --- CÁC HÀM KÉO THẢ ---
       function handleDragStart(event) {
         event.dataTransfer.setData("text/plain", event.target.id);
         setTimeout(() => {
@@ -405,21 +515,6 @@
         event.currentTarget.classList.remove("drag-over");
       }
 
-      function handleDrop(event) {
-        event.preventDefault();
-        event.currentTarget.classList.remove("drag-over");
-
-        const studentId = event.dataTransfer.getData("text/plain");
-        const newGroupId = parseInt(event.currentTarget.dataset.groupid, 10);
-
-        const student = students.find((s) => s.id === studentId);
-        if (student) {
-          student.group = newGroupId;
-          renderStudentList();
-        }
-      }
-
-      // Gắn sự kiện cho các drop zone
       document.querySelectorAll(".drop-zone").forEach((zone) => {
         zone.addEventListener("dragover", handleDragOver);
         zone.addEventListener("dragleave", handleDragLeave);
@@ -428,18 +523,11 @@
 
       // --- CÁC HÀM HIỂN THỊ DỮ LIỆU (RENDER) ---
       function renderStudentList() {
-        // Xóa tất cả học sinh hiện có trên giao diện
         document
           .querySelectorAll(".student-card")
           .forEach((card) => card.remove());
-        // Xóa thông báo mặc định
-        const defaultMsg = document.querySelector("#unassigned-zone p");
-        if (defaultMsg) defaultMsg.style.display = "none";
-
-        if (students.length === 0) {
-          if (defaultMsg) defaultMsg.style.display = "block";
-          return;
-        }
+        const unassignedZone = document.getElementById("unassigned-zone");
+        const defaultMsg = unassignedZone.querySelector("p");
 
         students.forEach((student) => {
           const studentCard = document.createElement("div");
@@ -462,6 +550,12 @@
             targetZone.appendChild(studentCard);
           }
         });
+
+        if (unassignedZone.querySelectorAll(".student-card").length === 0) {
+          if (defaultMsg) defaultMsg.style.display = "block";
+        } else {
+          if (defaultMsg) defaultMsg.style.display = "none";
+        }
       }
 
       function renderTop10List(top10) {
@@ -471,12 +565,10 @@
             '<p class="text-gray-500 text-center">Không có dữ liệu.</p>';
           return;
         }
-
         const medals = ["🥇", "🥈", "🥉"];
         top10.forEach((student, index) => {
           const rankItem = document.createElement("div");
           rankItem.className = "flex items-center p-4 rounded-lg border";
-
           let rankContent;
           if (index < 3) {
             rankItem.className += " bg-yellow-50 border-yellow-200";
@@ -487,10 +579,8 @@
               index + 1
             }</div>`;
           }
-
           const groupText =
             student.group === 0 ? "Chưa xếp" : `Tổ ${student.group}`;
-
           rankItem.innerHTML = `
                     ${rankContent}
                     <div class="ml-4 flex-grow">
