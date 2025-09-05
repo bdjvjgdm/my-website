@@ -36,7 +36,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-image: url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-image: url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -63,7 +63,7 @@
                  <div class="space-y-4">
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700">Tên đăng nhập (Email)</label>
-                        <input type="email" id="email" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-violet-500 focus:border-violet-500" placeholder="ví dụ: to1@app.com">
+                        <input type="email" id="email" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-violet-500 focus:border-violet-500" placeholder="ví dụ: to1@gmail.com">
                     </div>
                     <div>
                         <label for="password" class="block text-sm font-medium text-gray-700">Mật khẩu</label>
@@ -200,11 +200,11 @@
     <script>
         // --- CẤU HÌNH VÀ BIẾN TOÀN CỤC ---
         const predefinedUsers = {
-            'to1@app.com': { role: 'Tổ 1', groupId: 1 },
-            'to2@app.com': { role: 'Tổ 2', groupId: 2 },
-            'to3@app.com': { role: 'Tổ 3', groupId: 3 },
-            'to4@app.com': { role: 'Tổ 4', groupId: 4 },
-            'admin@app.com': { role: 'ADMIN', groupId: null } // Admin có thể quản lý tất cả
+            'to1@gmail.com': { role: 'Tổ 1', groupId: 1 },
+            'to2@gmail.com': { role: 'Tổ 2', groupId: 2 },
+            'to3@gmail.com': { role: 'Tổ 3', groupId: 3 },
+            'to4@gmail.com': { role: 'Tổ 4', groupId: 4 },
+            'admin@check.com': { role: 'ADMIN', groupId: null } // Admin có thể quản lý tất cả
         };
         
         let students = [];
