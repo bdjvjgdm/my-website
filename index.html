@@ -36,7 +36,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-image: url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-image: url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%D');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -68,6 +68,45 @@
         }
         .student-card:hover .delete-btn {
             opacity: 1;
+        }
+        .fab {
+            position: fixed;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .fab-main {
+             background-color: #7c3aed;
+             bottom: 30px;
+        }
+        .fab-secondary {
+            background-color: #f59e0b;
+            bottom: 100px;
+        }
+        .fab:hover {
+            transform: scale(1.1);
+        }
+        .table-input {
+            width: 100%;
+            padding: 4px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            text-align: center;
+        }
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 8px;
+            text-align: center;
+            vertical-align: middle;
         }
     </style>
 </head>
@@ -172,17 +211,20 @@
                 </div>
                 <div class="pt-6 border-t border-gray-200 text-center space-y-4">
                     <button onclick="showSummary()" class="w-full max-w-xs mx-auto py-3 px-4 border border-transparent rounded-lg shadow-lg text-sm font-bold text-gray-800 bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 transition-transform transform hover:scale-105">
-                        Tổng Kết Tuần
+                        Tổng Kết Xếp Hạng Học Sinh
                     </button>
-                    <!-- Nút Xóa Dữ Liệu - Chỉ dành cho Admin -->
-                    <button id="clear-data-button" onclick="openClearDataModal()" class="hidden w-full max-w-xs mx-auto py-3 px-4 border border-transparent rounded-lg shadow-lg text-sm font-bold text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-transform transform hover:scale-105">
+                    <!-- Nút mới cho Admin -->
+                    <button id="finalize-week-button" onclick="openFinalizeWeekModal()" class="hidden w-full max-w-xs mx-auto py-3 px-4 border border-transparent rounded-lg shadow-lg text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Chốt Điểm & Bắt Đầu Tuần Mới
+                    </button>
+                    <button id="clear-data-button" onclick="openClearDataModal()" class="hidden w-full max-w-xs mx-auto py-3 px-4 border border-transparent rounded-lg shadow-lg text-sm font-bold text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                         Xóa Toàn Bộ Dữ Liệu
                     </button>
                 </div>
             </div>
         </div>
-
-        <!-- Trang Tổng Kết -->
+        
+        <!-- Trang Tổng Kết Xếp Hạng Học Sinh -->
         <div id="summary-page" class="hidden w-full max-w-2xl">
              <div class="card shadow-2xl rounded-2xl p-8 space-y-6">
                 <h1 class="text-3xl font-bold text-center text-gray-800">Bảng Xếp Hạng Tuần</h1>
@@ -195,14 +237,112 @@
                 </div>
              </div>
         </div>
+        
+        <!-- Trang Bảng Điểm Chi Tiết -->
+        <div id="scoring-table-page" class="hidden w-full max-w-screen-xl">
+             <div class="card shadow-2xl rounded-2xl p-6 md:p-8 space-y-6">
+                <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-800">Bảng Chấm Điểm Thi Đua Chi Tiết</h1>
+                <div class="overflow-x-auto">
+                    <table id="detailed-scoring-table" class="min-w-full bg-white border border-gray-300 text-xs md:text-sm">
+                        <thead class="bg-gray-100 text-xs">
+                            <tr>
+                                <th rowspan="3" class="w-20">Tổ</th>
+                                <th rowspan="3">1. Trả lại của rơi khi nhặt được (+10đ)</th>
+                                <th rowspan="3">2. Lao động tình nguyện, được văn nghệ (+15đ)</th>
+                                <th rowspan="3">3. Có bài phát thanh, tuyên truyền (+10đ)</th>
+                                <th rowspan="3">4. Phát hiện hành vi sai trái trên MXH (+5đ/lần/hs)</th>
+                                <th class="bg-green-100">5. Tham gia các cuộc thi về văn hóa, lịch sử,...; công tác quản lý hồ sơ, sổ đoàn, nộp danh sách,...; các hoạt động quyên góp từ thiện, Đoàn phí, các khoản thu khác</th>
+                                <th colspan="5">6. Tham gia các hoạt động phong trào văn nghệ, TDTT, HSG, KHKT cấp huyện/tỉnh đạt giải:</th>
+                                <th colspan="4">7. Tham gia đội tuyển HSG, đội văn nghệ, đội TDTT cấp trường đạt giải:</th>
+                                <th rowspan="3">GIỜ HỌC TỐT</th>
+                                <th rowspan="3" class="bg-yellow-100">Điểm cộng</th>
+                            </tr>
+                            <tr>
+                                <th rowspan="2" class="bg-green-100 align-middle">Đầy đủ, đúng thời hạn, có chất lượng (+10đ)</th>
+                                <th colspan="5">Kết quả</th>
+                                <th colspan="4">Kết quả</th>
+                            </tr>
+                             <tr>
+                                <th>Nhất/HCV (+15đ/hs)</th>
+                                <th>Nhì/HCB (+12đ/hs)</th>
+                                <th>Ba/HCĐ (+10đ/hs)</th>
+                                <th>Khuyến khích (+7đ/hs)</th>
+                                <th>Có tham gia (+5đ/hs)</th>
+                                <th>Nhất (+10đ/giải)</th>
+                                <th>Nhì (+8đ/giải)</th>
+                                <th>Ba (+7đ/giải)</th>
+                                <th>Khuyến khích (+5đ/giải)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scoring-table-body">
+                            <!-- Dữ liệu sẽ được render bằng JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center pt-4">
+                     <button onclick="goBackToMain()" class="px-6 py-2 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                        Quay Lại Trang Quản Lý
+                    </button>
+                </div>
+             </div>
+        </div>
+
+        <!-- Trang Mới: Tổng Kết Tuần & Năm -->
+        <div id="monthly-summary-page" class="hidden w-full max-w-6xl">
+            <div class="card shadow-2xl rounded-2xl p-6 md:p-8 space-y-8">
+                <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-800">Tổng Kết Thi Đua Các Tuần</h1>
+                
+                <div id="weekly-summary-container" class="space-y-6 max-h-[400px] overflow-y-auto pr-4">
+                    <!-- Kết quả các tuần sẽ được render ở đây -->
+                </div>
+
+                <div id="yearly-summary-section" class="pt-8 border-t-2 border-dashed border-gray-300">
+                    <h2 class="text-xl md:text-2xl font-bold text-center text-gray-800 mb-6">Tổng Kết Năm Học</h2>
+                    <div class="flex items-center justify-center gap-4 mb-6">
+                        <label for="total-weeks-input" class="font-semibold">Số tuần học thực tế (n):</label>
+                        <div class="flex items-center gap-2">
+                           <span id="total-weeks-display" class="text-2xl font-bold text-violet-600 w-12 text-center">0</span>
+                           <button id="increment-n-button" onclick="incrementN()" class="hidden w-10 h-10 bg-gray-200 text-gray-800 rounded-full text-xl font-bold hover:bg-gray-300">+</button>
+                        </div>
+                    </div>
+                     <div class="text-center">
+                        <button onclick="calculateYearlySummary()" class="px-8 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700">
+                           Tính Tổng Kết Năm
+                        </button>
+                    </div>
+                    <div id="yearly-summary-results" class="mt-6 space-y-4"></div>
+                </div>
+
+                <div class="text-center pt-4">
+                     <button onclick="goBackToMain()" class="px-6 py-2 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                        Quay Lại Trang Quản Lý
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
     
-    <!-- Modal Xác nhận Xóa Toàn Bộ Dữ Liệu -->
-    <div id="clear-data-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center z-50">
+    <!-- Các nút FAB -->
+    <div id="fab-container" class="hidden">
+        <div id="fab-summary-button" onclick="showMonthlySummaryPage()" class="fab fab-secondary" title="Xem tổng kết tuần/năm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </div>
+        <div id="fab-table-button" onclick="showScoringTablePage()" class="fab fab-main" title="Mở bảng điểm chi tiết">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </div>
+    </div>
+    
+    <!-- Các Modals -->
+     <div id="clear-data-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center z-50">
         <div class="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-2xl bg-white space-y-6 text-center">
             <h3 class="text-2xl font-bold text-gray-900">Xác nhận Xóa Dữ Liệu</h3>
             <div class="mt-4 px-7 py-3">
-                <p class="text-md text-gray-600">Bạn có chắc chắn muốn xóa TOÀN BỘ dữ liệu học sinh không? <strong class="text-red-600">Hành động này không thể hoàn tác.</strong></p>
+                <p class="text-md text-gray-600">Bạn có chắc chắn muốn xóa TOÀN BỘ dữ liệu học sinh và điểm chi tiết không? <strong class="text-red-600">Hành động này không thể hoàn tác.</strong></p>
             </div>
             <div class="items-center px-4 py-3 space-x-4">
                 <button onclick="clearAllData()" class="px-6 py-2 bg-red-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">Xác nhận Xóa</button>
@@ -210,10 +350,8 @@
             </div>
         </div>
     </div>
-
-    <!-- Modal Xác nhận Xóa Một Học Sinh -->
     <div id="delete-student-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center z-50">
-        <div class="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-2xl bg-white space-y-6 text-center">
+         <div class="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-2xl bg-white space-y-6 text-center">
             <h3 class="text-2xl font-bold text-gray-900">Xác nhận Xóa Học Sinh</h3>
             <div class="mt-4 px-7 py-3">
                 <p id="delete-student-confirm-text" class="text-md text-gray-600"></p>
@@ -222,6 +360,18 @@
                 <button onclick="confirmDeleteStudent()" class="px-6 py-2 bg-red-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">Xóa</button>
                 <button onclick="closeDeleteStudentModal()" class="px-6 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400">Hủy</button>
                 <input type="hidden" id="student-id-to-delete">
+            </div>
+        </div>
+    </div>
+     <div id="finalize-week-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center z-50">
+        <div class="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-2xl bg-white space-y-6 text-center">
+            <h3 class="text-2xl font-bold text-gray-900">Xác nhận Chốt Điểm Tuần</h3>
+            <div id="finalize-week-summary" class="mt-4 text-left p-4 bg-gray-50 rounded-lg"></div>
+            <p class="text-md text-gray-600 mt-4">Bạn có muốn reset điểm của tất cả học sinh về 0 để bắt đầu tuần mới không?</p>
+            <div class="items-center px-4 py-3 space-x-4">
+                <button onclick="confirmFinalizeWeek(true)" class="px-6 py-2 bg-blue-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-blue-700">Lưu và Reset</button>
+                <button onclick="confirmFinalizeWeek(false)" class="px-6 py-2 bg-gray-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-gray-700">Chỉ Lưu</button>
+                <button onclick="closeFinalizeWeekModal()" class="px-6 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-300">Hủy</button>
             </div>
         </div>
     </div>
@@ -238,15 +388,23 @@
         };
         
         let students = [];
-        let unsubscribe; 
+        let scoringData = {};
+        let weeklySummaries = { weeks: [], totalWeeks: 0 };
+        let unsubscribeStudents, unsubscribeScoring, unsubscribeWeekly; 
         let currentUserRole = null;
         let currentUserGroupId = null;
         
-        const dataDocRef = () => db.collection("classes").doc("mainClass");
+        const studentsDocRef = () => db.collection("classes").doc("mainClass");
+        const scoringDocRef = () => db.collection("classes").doc("scoringTable");
+        const weeklySummariesDocRef = () => db.collection("classes").doc("weeklySummaries");
 
+        // DOM Elements
         const loginPage = document.getElementById('login-page');
         const mainPage = document.getElementById('main-page');
         const summaryPage = document.getElementById('summary-page');
+        const scoringTablePage = document.getElementById('scoring-table-page');
+        const monthlySummaryPage = document.getElementById('monthly-summary-page');
+        const fabContainer = document.getElementById('fab-container');
         const loginError = document.getElementById('login-error');
         const addStudentError = document.getElementById('add-student-error');
         const addPointsError = document.getElementById('add-points-error');
@@ -255,56 +413,76 @@
         const clearDataButton = document.getElementById('clear-data-button');
         const clearDataModal = document.getElementById('clear-data-modal');
         const deleteStudentModal = document.getElementById('delete-student-modal');
+        const finalizeWeekButton = document.getElementById('finalize-week-button');
+        const finalizeWeekModal = document.getElementById('finalize-week-modal');
+        const incrementNButton = document.getElementById('increment-n-button');
 
         // --- LƯU TRỮ DỮ LIỆU VỚI FIRESTORE ---
-        async function saveData() {
+        async function saveStudentsData() {
             try {
-                await dataDocRef().set({ students: students });
+                await studentsDocRef().set({ students: students });
             } catch (error) {
-                console.error("Lỗi khi lưu dữ liệu: ", error);
-                alert("Đã có lỗi xảy ra khi lưu dữ liệu.");
+                console.error("Lỗi khi lưu dữ liệu học sinh: ", error);
+            }
+        }
+        
+        async function saveScoringData() {
+             try {
+                await scoringDocRef().set(scoringData, { merge: true });
+            } catch (error) {
+                console.error("Lỗi khi lưu dữ liệu bảng điểm: ", error);
             }
         }
 
         function listenForDataChanges() {
-            if (unsubscribe) unsubscribe();
-            unsubscribe = dataDocRef().onSnapshot((doc) => {
+            if (unsubscribeStudents) unsubscribeStudents();
+            unsubscribeStudents = studentsDocRef().onSnapshot(doc => {
                 students = doc.exists ? (doc.data().students || []) : [];
                 renderStudentList();
-            }, (error) => {
-                console.error("Lỗi khi lắng nghe dữ liệu:", error);
+            });
+
+            if (unsubscribeScoring) unsubscribeScoring();
+            unsubscribeScoring = scoringDocRef().onSnapshot(doc => {
+                scoringData = doc.exists ? (doc.data() || {}) : {};
+                if(!scoringTablePage.classList.contains('hidden')) renderScoringTable();
+            });
+
+            if (unsubscribeWeekly) unsubscribeWeekly();
+            unsubscribeWeekly = weeklySummariesDocRef().onSnapshot(doc => {
+                 weeklySummaries = doc.exists ? (doc.data() || { weeks: [], totalWeeks: 0 }) : { weeks: [], totalWeeks: 0 };
+                 if(!monthlySummaryPage.classList.contains('hidden')) renderMonthlySummaryPage();
             });
         }
 
+
         // --- XÁC THỰC VÀ ĐIỀU HƯỚNG ---
         auth.onAuthStateChanged(user => {
+            const allPages = [mainPage, summaryPage, scoringTablePage, monthlySummaryPage];
             if (user) {
-                // SỬA LỖI: Chuyển email về chữ thường để khớp key
                 const userData = predefinedUsers[user.email.toLowerCase()];
-                if (userData) {
+                if(userData) {
                     currentUserRole = userData.role;
                     currentUserGroupId = userData.groupId;
                     userInfo.innerHTML = `<strong>${user.email}</strong> [${currentUserRole}]`;
                 }
 
-                if (currentUserRole === 'ADMIN') {
-                    clearDataButton.classList.remove('hidden');
-                } else {
-                    clearDataButton.classList.add('hidden');
-                }
-
+                const isAdmin = currentUserRole === 'ADMIN';
+                clearDataButton.classList.toggle('hidden', !isAdmin);
+                finalizeWeekButton.classList.toggle('hidden', !isAdmin);
+                
                 loginPage.classList.add('hidden');
                 mainPage.classList.remove('hidden');
+                fabContainer.classList.remove('hidden');
                 listenForDataChanges();
             } else {
-                if (unsubscribe) unsubscribe();
-                students = [];
+                if (unsubscribeStudents) unsubscribeStudents();
+                if (unsubscribeScoring) unsubscribeScoring();
+                if (unsubscribeWeekly) unsubscribeWeekly();
+                
                 currentUserRole = null;
                 currentUserGroupId = null;
-                renderStudentList();
-                clearDataButton.classList.add('hidden');
-                mainPage.classList.add('hidden');
-                summaryPage.classList.add('hidden');
+                allPages.forEach(page => page.classList.add('hidden'));
+                fabContainer.classList.add('hidden');
                 loginPage.classList.remove('hidden');
             }
         });
@@ -338,13 +516,40 @@
         async function handleLogout() {
             await auth.signOut();
         }
+        
+        function showPage(pageToShow) {
+            const allPages = [mainPage, summaryPage, scoringTablePage, monthlySummaryPage];
+            allPages.forEach(p => p.classList.add('hidden'));
+            pageToShow.classList.remove('hidden');
+            
+            const isMainPage = pageToShow === mainPage;
+            fabContainer.classList.toggle('hidden', !isMainPage);
+        }
+
+        const goBackToMain = () => showPage(mainPage);
+        const showSummary = () => {
+             if (students.length === 0) return alert('Chưa có dữ liệu học sinh.');
+             const sortedStudents = [...students].sort((a, b) => b.score - a.score);
+             renderTop10List(sortedStudents.slice(0, 10));
+             showPage(summaryPage);
+        };
+        const showScoringTablePage = () => {
+            renderScoringTable();
+            showPage(scoringTablePage);
+        };
+        const showMonthlySummaryPage = () => {
+            renderMonthlySummaryPage();
+            showPage(monthlySummaryPage);
+        }
 
         // --- CHỨC NĂNG QUẢN LÝ DỮ LIỆU (ADMIN) ---
         function openClearDataModal() { clearDataModal.classList.remove('hidden'); }
         function closeClearDataModal() { clearDataModal.classList.add('hidden'); }
 
         async function clearAllData() {
-            await dataDocRef().set({ students: [] });
+            await studentsDocRef().set({ students: [] });
+            await scoringDocRef().set({});
+            await weeklySummariesDocRef().set({ weeks: [], totalWeeks: 0 });
             closeClearDataModal();
         }
 
@@ -362,10 +567,125 @@
         async function confirmDeleteStudent() {
             const studentId = document.getElementById('student-id-to-delete').value;
             students = students.filter(s => s.id !== studentId);
-            await saveData();
+            await saveStudentsData();
             closeDeleteStudentModal();
         }
         
+        // --- CHỨC NĂNG CHỐT ĐIỂM TUẦN ---
+        function openFinalizeWeekModal() {
+            const summaryDiv = document.getElementById('finalize-week-summary');
+            summaryDiv.innerHTML = '<p class="font-bold mb-2">Điểm tổng kết tuần này:</p>';
+            let groupScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
+
+            students.forEach(s => {
+                if(s.group >= 1 && s.group <= 4) {
+                    groupScores[s.group] += s.score;
+                }
+            });
+
+            for (let i = 1; i <= 4; i++) {
+                summaryDiv.innerHTML += `<p><strong>Tổ ${i}:</strong> ${groupScores[i]} điểm</p>`;
+            }
+            finalizeWeekModal.classList.remove('hidden');
+        }
+
+        function closeFinalizeWeekModal() {
+            finalizeWeekModal.classList.add('hidden');
+        }
+        
+        async function confirmFinalizeWeek(shouldReset) {
+            let groupScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
+             students.forEach(s => {
+                if(s.group >= 1 && s.group <= 4) groupScores[s.group] += s.score;
+            });
+
+            const newWeekData = {
+                weekNumber: (weeklySummaries.weeks?.length || 0) + 1,
+                timestamp: new Date().toISOString(),
+                scores: groupScores
+            };
+
+            const updatedWeeks = [...(weeklySummaries.weeks || []), newWeekData];
+            await weeklySummariesDocRef().set({ ...weeklySummaries, weeks: updatedWeeks }, { merge: true });
+            
+            if(shouldReset) {
+                students.forEach(s => s.score = 0);
+                await studentsDocRef().update({ students: students });
+                alert("Đã lưu và reset điểm thành công!");
+            } else {
+                alert("Đã lưu điểm tuần thành công!");
+            }
+            closeFinalizeWeekModal();
+        }
+
+        // --- CHỨC NĂNG TỔNG KẾT NĂM ---
+        function renderMonthlySummaryPage() {
+            const container = document.getElementById('weekly-summary-container');
+            container.innerHTML = '';
+            
+            if (!weeklySummaries.weeks || weeklySummaries.weeks.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500">Chưa có dữ liệu tuần nào được lưu.</p>';
+            } else {
+                 [...weeklySummaries.weeks].reverse().forEach(week => {
+                    const sortedGroups = Object.entries(week.scores).sort((a, b) => b[1] - a[1]);
+                    let weekHTML = `<div class="p-4 border rounded-lg bg-white">
+                                        <h3 class="font-bold text-lg mb-2">Tuần ${week.weekNumber}</h3><ul>`;
+                    sortedGroups.forEach(([groupId, score], index) => {
+                        weekHTML += `<li class="flex justify-between items-center p-1 ${index === 0 ? 'font-semibold text-violet-600' : ''}">
+                                        <span>${index + 1}. Tổ ${groupId}</span>
+                                        <span>${score} điểm</span>
+                                     </li>`;
+                    });
+                    weekHTML += '</ul></div>';
+                    container.innerHTML += weekHTML;
+                });
+            }
+
+            document.getElementById('total-weeks-display').textContent = weeklySummaries.totalWeeks || 0;
+            incrementNButton.classList.toggle('hidden', currentUserRole !== 'ADMIN');
+        }
+
+        async function incrementN() {
+            const newN = (weeklySummaries.totalWeeks || 0) + 1;
+            await weeklySummariesDocRef().set({ totalWeeks: newN }, { merge: true });
+        }
+
+        function calculateYearlySummary() {
+            const resultsDiv = document.getElementById('yearly-summary-results');
+            resultsDiv.innerHTML = '';
+            const n = weeklySummaries.totalWeeks || 0;
+            if(n === 0) {
+                 resultsDiv.innerHTML = '<p class="text-center text-red-500">Vui lòng thiết lập số tuần học (n) trước khi tính.</p>';
+                 return;
+            }
+            if (!weeklySummaries.weeks || weeklySummaries.weeks.length === 0) {
+                resultsDiv.innerHTML = '<p class="text-center text-red-500">Không có dữ liệu tuần để tổng kết.</p>';
+                return;
+            }
+            
+            let yearlyScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            weeklySummaries.weeks.forEach(week => {
+                for (let i = 1; i <= 4; i++) {
+                    yearlyScores[i] += week.scores[i] || 0;
+                }
+            });
+
+            const sortedYearly = Object.entries(yearlyScores).sort((a, b) => b[1] - a[1]);
+            const threshold = 1000 * n;
+            let resultHTML = `<h4 class="font-bold text-center">Kết quả xếp hạng năm (dựa trên ${weeklySummaries.weeks.length} tuần đã lưu):</h4>`;
+            sortedYearly.forEach(([groupId, score], index) => {
+                const isBelowThreshold = score < threshold;
+                resultHTML += `<div class="p-4 border rounded-lg ${isBelowThreshold ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'}">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-lg">${index + 1}. Tổ ${groupId}</span>
+                                    <span class="font-bold text-xl ${isBelowThreshold ? 'text-red-600' : 'text-green-600'}">${score} điểm</span>
+                                </div>
+                                ${isBelowThreshold ? `<p class="text-sm text-red-700 mt-1">Thấp hơn mức điểm chuẩn ${threshold} điểm.</p>` : ''}
+                               </div>`;
+            });
+            resultsDiv.innerHTML = resultHTML;
+        }
+
         // --- CÁC HÀM XỬ LÝ SỰ KIỆN CHÍNH ---
         async function addStudent() {
             const nameInput = document.getElementById('student-name');
@@ -385,7 +705,7 @@
             students.push({ id: newId, name, group: 0, score: 0 });
             nameInput.value = '';
             nameInput.focus();
-            await saveData();
+            await saveStudentsData();
         }
 
         async function addPoints() {
@@ -420,7 +740,7 @@
             student.score += points;
             studentIdInput.value = '';
             pointsInput.value = '';
-            await saveData();
+            await saveStudentsData();
         }
         
         // --- KÉO THẢ ---
@@ -432,25 +752,8 @@
             const student = students.find(s => s.id === studentId);
             if (student && student.group !== newGroupId) {
                 student.group = newGroupId;
-                await saveData();
+                await saveStudentsData();
             }
-        }
-
-        function showSummary() {
-            if (students.length === 0) {
-                alert('Chưa có dữ liệu học sinh để tổng kết.');
-                return;
-            }
-            const sortedStudents = [...students].sort((a, b) => b.score - a.score);
-            const top10 = sortedStudents.slice(0, 10);
-            renderTop10List(top10);
-            mainPage.classList.add('hidden');
-            summaryPage.classList.remove('hidden');
-        }
-
-        function goBackToMain() {
-            summaryPage.classList.add('hidden');
-            mainPage.classList.remove('hidden');
         }
 
         function handleDragStart(event) {
@@ -481,7 +784,6 @@
                 studentCard.draggable = true;
 
                 let deleteButtonHTML = '';
-                // THÊM MỚI: Chỉ Admin mới thấy nút xóa
                 if (currentUserRole === 'ADMIN') {
                     deleteButtonHTML = `<div class="delete-btn" onclick="openDeleteStudentModal('${student.id}')" title="Xóa học sinh">×</div>`;
                 }
@@ -531,6 +833,52 @@
                 `;
                 top10ListContainer.appendChild(rankItem);
             });
+        }
+        
+        // --- TRANG CHẤM ĐIỂM CHI TIẾT SCRIPT ---
+        const scoreCriteria = [
+            'cua_roi', 'lao_dong', 'phat_thanh', 'mxh', 'cuoc_thi_chat_luong',
+            'phong_trao_nhat', 'phong_trao_nhi', 'phong_trao_ba', 'phong_trao_kk', 'phong_trao_tham_gia',
+            'hsg_nhat', 'hsg_nhi', 'hsg_ba', 'hsg_kk', 'gio_hoc_tot'
+        ];
+
+        function renderScoringTable() {
+            const tableBody = document.getElementById('scoring-table-body');
+            tableBody.innerHTML = '';
+            for (let i = 1; i <= 4; i++) {
+                const groupId = `group${i}`;
+                const row = document.createElement('tr');
+                let rowHTML = `<td class="font-bold">Tổ ${i}</td>`;
+                
+                scoreCriteria.forEach(criterion => {
+                    const value = scoringData[groupId]?.[criterion] || '';
+                    rowHTML += `<td><input type="number" class="table-input" value="${value}" oninput="handleScoreInputChange(this, '${groupId}', '${criterion}')" min="0"></td>`;
+                });
+                
+                rowHTML += `<td id="total-score-${groupId}" class="font-bold bg-yellow-100">0</td>`;
+                row.innerHTML = rowHTML;
+                tableBody.appendChild(row);
+                calculateRowTotal(groupId);
+            }
+        }
+
+        function calculateRowTotal(groupId) {
+            let total = 0;
+            const groupData = scoringData[groupId] || {};
+            for (const criterion of scoreCriteria) {
+                total += Number(groupData[criterion] || 0);
+            }
+            document.getElementById(`total-score-${groupId}`).textContent = total;
+        }
+
+        async function handleScoreInputChange(inputElement, groupId, criterion) {
+            const value = inputElement.value;
+            if (!scoringData[groupId]) {
+                scoringData[groupId] = {};
+            }
+            scoringData[groupId][criterion] = Number(value);
+            calculateRowTotal(groupId);
+            await saveScoringData();
         }
     </script>
 </body>
