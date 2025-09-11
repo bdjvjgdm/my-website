@@ -297,6 +297,16 @@
         text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         color: #a78bfa;
       }
+      /* Custom styles for the scoring table for better readability */
+      #individual-scoring-page thead th {
+        font-size: 11px;
+        padding: 4px 2px;
+        white-space: normal;
+        vertical-align: middle;
+      }
+      #individual-scoring-page .min-w-\[120px\] {
+        min-width: 120px;
+      }
     </style>
   </head>
   <body>
@@ -493,20 +503,20 @@
                   <th rowspan="2" class="min-w-[60px]">Tổng điểm</th>
                 </tr>
                 <tr>
-                  <th>Phong trào (+20/+25)</th>
-                  <th>SĐB (+8-10)</th>
-                  <th>Phát biểu (+5)</th>
-                  <th>Việc tốt (+10)</th>
-                  <th>Trống (-5)</th>
-                  <th>Nghỉ trực (-5)</th>
-                  <th>Trễ/Ồn (-5)</th>
-                  <th>Cờ/ồn (-10)</th>
-                  <th>Bỏ tiết/Đổi chỗ (-20)</th>
-                  <th>BT (-5)</th>
-                  <th>Bài/Soạn (-10)</th>
-                  <th>On/Ghi (-5)</th>
-                  <th>Cóp/Đth (-20)</th>
-                  <th>VP Nặng</th>
+                  <th>Tham gia<br />phong trào<br />(+25)</th>
+                  <th>Điểm<br />SĐB<br />(+10)</th>
+                  <th>Phát<br />biểu<br />(+5)</th>
+                  <th>Việc tốt, lđ<br />tình nguyện<br />(+10)</th>
+                  <th>Đánh trống<br />(KP) vào lớp<br />(-5)</th>
+                  <th>Nghỉ học<br />trực nhật<br />(-5)</th>
+                  <th>Đi trễ, ồn<br />trực muộn<br />(-5)</th>
+                  <th>Chào cờ, ở<br />lớp, ồn<br />(-10)</th>
+                  <th>Bỏ tiết, đổi<br />chỗ, ồn<br />(-20)</th>
+                  <th>Vi phạm làm<br />bài tập<br />(-5)</th>
+                  <th>K.thuộc bài<br />soạn bài<br />(-10)</th>
+                  <th>Ồn, k.ghi bài<br />gv nhắc<br />(-5)</th>
+                  <th>Quay cóp<br />sd đth<br />(-20)</th>
+                  <th>VP Nặng<br />(Đánh nhau...)</th>
                 </tr>
               </thead>
               <tbody id="individual-scoring-tbody"></tbody>
@@ -517,16 +527,16 @@
                   <td id="total-col-sdb">0</td>
                   <td id="total-col-phatbieu">0</td>
                   <td id="total-col-viectot">0</td>
-                  <td id="total-col-trong">0</td>
-                  <td id="total-col-nghihoc">0</td>
+                  <td id="total-col-danhtrong">0</td>
+                  <td id="total-col-nghitruc">0</td>
                   <td id="total-col-ditre">0</td>
                   <td id="total-col-chaoco">0</td>
                   <td id="total-col-botiet">0</td>
-                  <td id="total-col-baikt">0</td>
+                  <td id="total-col-vplambai">0</td>
                   <td id="total-col-khongthuoc">0</td>
-                  <td id="total-col-onghi">0</td>
+                  <td id="total-col-onkhongghi">0</td>
                   <td id="total-col-quaycop">0</td>
-                  <td id="total-col-viphamnang">0</td>
+                  <td id="total-col-vpnang">0</td>
                   <td id="total-final" class="bg-purple-900 text-lg">0</td>
                 </tr>
               </tfoot>
@@ -942,6 +952,7 @@
       const handleLogout = async () => {
         await auth.signOut();
       };
+
       function showPage(pageToShow) {
         [
           mainPage,
@@ -1030,32 +1041,32 @@
         "sdb",
         "phatbieu",
         "viectot",
-        "trong",
-        "nghihoc",
+        "danhtrong",
+        "nghitruc",
         "ditre",
         "chaoco",
         "botiet",
-        "baikt",
+        "vplambai",
         "khongthuoc",
-        "onghi",
+        "onkhongghi",
         "quaycop",
-        "viphamnang",
+        "vpnang",
       ];
       const pointValues = {
         phongtrao: 25,
         sdb: 10,
         phatbieu: 5,
         viectot: 10,
-        trong: -5,
-        nghihoc: -5,
+        danhtrong: -5,
+        nghitruc: -5,
         ditre: -5,
         chaoco: -10,
         botiet: -20,
-        baikt: -5,
+        vplambai: -5,
         khongthuoc: -10,
-        onghi: -5,
+        onkhongghi: -5,
         quaycop: -20,
-        viphamnang: -100,
+        vpnang: -100,
       };
 
       function goToScoringPage(groupId) {
