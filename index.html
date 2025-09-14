@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Quản Lý Điểm Thi Đua</title>
     <!-- Tích hợp Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Tải các thư viện Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
@@ -20,1237 +17,727 @@
 
     <!-- Khởi tạo Firebase -->
     <script>
-      // IMPORTANT: Replace with your actual Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyDaeedEmbpGg_rr2ln13lWsXKY-opoy36E",
-        authDomain: "quanlydiem-c2820.firebaseapp.com",
-        projectId: "quanlydiem-c2820",
-        storageBucket: "quanlydiem-c2820.appspot.com",
-        messagingSenderId: "912711399959",
-        appId: "1:912711399959:web:08e5897d6b958c1371fa52",
-      };
-      firebase.initializeApp(firebaseConfig);
-      window.db = firebase.firestore();
-      window.auth = firebase.auth();
+        // IMPORTANT: Replace with your actual Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDaeedEmbpGg_rr2ln13lWsXKY-opoy36E",
+            authDomain: "quanlydiem-c2820.firebaseapp.com",
+            projectId: "quanlydiem-c2820",
+            storageBucket: "quanlydiem-c2820.appspot.com",
+            messagingSenderId: "912711399959",
+            appId: "1:912711399959:web:08e5897d6b958c1371fa52"
+        };
+        firebase.initializeApp(firebaseConfig);
+        window.db = firebase.firestore();
+        window.auth = firebase.auth();
     </script>
 
     <style>
-      /* --- NEW STYLES FOR A MODERN, MYSTICAL LOOK --- */
-      body {
-        font-family: "Poppins", sans-serif;
-        background-color: #0a092d;
-        background-image: url("https://images.unsplash.com/photo-1532372576292-a42302244248?q=80&w=2574&auto=format&fit=crop");
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        color: #e0e0e0;
-      }
-
-      .card {
-        background-color: rgba(
-          16,
-          15,
-          58,
-          0.6
-        ); /* Deep blue with transparency */
-        backdrop-filter: blur(16px) saturate(180%);
-        -webkit-backdrop-filter: blur(16px) saturate(180%);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-      }
-
-      h1,
-      h2,
-      h3 {
-        color: #ffffff;
-        text-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
-      }
-
-      .input-field {
-        background-color: rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: #f0f0f0;
-        transition: all 0.3s ease;
-      }
-      .input-field::placeholder {
-        color: #a0aec0;
-      }
-      .input-field:focus {
-        outline: none;
-        border-color: #a78bfa;
-        box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.3);
-      }
-      .input-field:disabled {
-        background-color: rgba(0, 0, 0, 0.2);
-        cursor: not-allowed;
-        color: #9ca3af;
-      }
-
-      .btn {
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        border: none;
-        color: white;
-        font-weight: bold;
-      }
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
-      }
-      .btn-primary {
-        background: linear-gradient(45deg, #4f46e5, #c026d3);
-      }
-      .btn-secondary {
-        background: linear-gradient(45deg, #dd6b20, #fbbf24);
-      }
-      .btn-danger {
-        background: linear-gradient(45deg, #dc2626, #f87171);
-      }
-      .btn-ai {
-        background: linear-gradient(45deg, #6366f1, #3b82f6);
-      }
-      .btn-gray {
-        background-color: #4a5568;
-      }
-      .btn-gray:hover {
-        background-color: #2d3748;
-      }
-      .btn-subtle {
-        background-color: transparent;
-        color: #a78bfa;
-        font-weight: 500;
-      }
-      .btn-subtle:hover {
-        color: #c4b5fd;
-      }
-
-      .drop-zone {
-        background-color: rgba(0, 0, 0, 0.25);
-        border: 2px dashed rgba(255, 255, 255, 0.2);
-        border-radius: 0.75rem;
-        transition: all 0.3s ease;
-        min-height: 200px;
-      }
-      .drop-zone.drag-over {
-        border-color: #818cf8;
-        background-color: rgba(79, 70, 229, 0.1);
-        box-shadow: inset 0 0 10px rgba(129, 140, 248, 0.5);
-      }
-
-      .student-card {
-        cursor: grab;
-        transition: all 0.2s;
-        position: relative;
-        background-color: rgba(40, 40, 80, 0.8);
-        border: 1px solid rgba(167, 139, 250, 0.5);
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        border-radius: 0.5rem;
-        padding: 0.5rem;
-      }
-      .student-card:active {
-        cursor: grabbing;
-        transform: scale(1.05);
-        box-shadow: 0 5px 15px rgba(167, 139, 250, 0.3);
-      }
-      .student-card.dragging {
-        opacity: 0.5;
-        transform: rotate(5deg);
-      }
-      .student-card .student-id {
-        font-weight: 700;
-        color: #c4b5fd;
-      }
-      .student-card .student-name {
-        color: #e5e7eb;
-      }
-      .student-card .student-score {
-        color: #fcd34d; /* amber-300 */
-        margin-top: 2px;
-        font-weight: bold;
-      }
-
-      .fab {
-        position: fixed;
-        right: 30px;
-        width: 60px;
-        height: 60px;
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 0 20px rgba(192, 132, 252, 0.5);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        z-index: 1000;
-        border: 2px solid rgba(255, 255, 255, 0.5);
-      }
-      .fab-secondary {
-        background: linear-gradient(135deg, #d946ef, #8b5cf6);
-        bottom: 100px;
-      }
-      .fab-tertiary {
-        background: linear-gradient(135deg, #3b82f6, #14b8a6);
-        bottom: 30px;
-      }
-      .fab:hover {
-        transform: scale(1.1) rotate(15deg);
-        box-shadow: 0 0 30px rgba(192, 132, 252, 0.8);
-      }
-
-      table {
-        border-collapse: separate;
-        border-spacing: 0;
-      }
-      th,
-      td {
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 8px;
-        text-align: center;
-        vertical-align: middle;
-      }
-      thead th {
-        background-color: rgba(0, 0, 0, 0.4);
-        font-weight: 600;
-        color: #c4b5fd;
-      }
-      tbody tr {
-        background-color: rgba(255, 255, 255, 0.05);
-      }
-      tbody tr:nth-child(even) {
-        background-color: rgba(255, 255, 255, 0.1);
-      }
-      .table-input {
-        background-color: rgba(0, 0, 0, 0.4);
-        border: 1px solid #4a5568;
-        color: white;
-        width: 100%;
-        min-width: 40px;
-        padding: 4px;
-        border-radius: 4px;
-        text-align: center;
-      }
-      .table-input:focus {
-        border-color: #a78bfa;
-        background-color: rgba(0, 0, 0, 0.6);
-      }
-
-      .spinner {
-        border: 4px solid rgba(255, 255, 255, 0.1);
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        border-left-color: #a78bfa;
-        animation: spin 1s ease infinite;
-      }
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
+        /* --- NEW STYLES FOR A MODERN, MYSTICAL LOOK --- */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0a092d;
+            background-image: url('https://images.unsplash.com/photo-1532372576292-a42302244248?q=80&w=2574&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #E0E0E0;
         }
-        100% {
-          transform: rotate(360deg);
+
+        .card {
+            background-color: rgba(16, 15, 58, 0.6); /* Deep blue with transparency */
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
-      }
+        
+        h1, h2, h3 {
+             color: #FFFFFF;
+             text-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
+        }
 
-      /* Seating Chart Styles */
-      .seat {
-        width: 55px;
-        height: 55px;
-        border: 2px solid #4a5568;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: radial-gradient(
-          circle,
-          rgba(255, 255, 255, 0.1) 0%,
-          rgba(255, 255, 255, 0) 70%
-        );
-        transition: all 0.2s;
-      }
-      .seat.occupied {
-        background-color: rgba(192, 132, 252, 0.2);
-        border-color: #c084fc;
-        box-shadow: 0 0 15px rgba(192, 132, 252, 0.5);
-        cursor: grab;
-      }
-      .seat.drag-over,
-      #unassigned-students-list.drag-over {
-        border-style: solid;
-        border-color: #818cf8;
-        background-color: rgba(79, 70, 229, 0.1);
-        box-shadow: inset 0 0 10px rgba(129, 140, 248, 0.5);
-      }
-      .desk {
-        display: flex;
-        gap: 8px;
-      }
-      .student-in-seat {
-        font-size: 10px;
-        text-align: center;
-        line-height: 1.2;
-        word-break: break-word;
-        color: #f0f0f0;
-      }
-      .student-in-seat .font-bold {
-        color: #d8b4fe;
-      }
+        .input-field {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #f0f0f0;
+            transition: all 0.3s ease;
+        }
+        .input-field::placeholder {
+            color: #a0aec0;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.3);
+        }
+        .input-field:disabled {
+            background-color: rgba(0,0,0,0.2);
+            cursor: not-allowed;
+            color: #9ca3af;
+        }
 
-      .classroom-feature {
-        background: rgba(0, 0, 0, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-        color: #a78bfa;
-      }
-      /* Custom styles for the scoring table for better readability */
-      #individual-scoring-page thead th {
-        font-size: 11px;
-        padding: 4px 2px;
-        white-space: normal;
-        vertical-align: middle;
-      }
-      #individual-scoring-page .min-w-\[120px\] {
-        min-width: 120px;
-      }
+        .btn {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            border: none;
+            color: white;
+            font-weight: bold;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.3);
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #4f46e5, #c026d3);
+        }
+        .btn-secondary {
+            background: linear-gradient(45deg, #DD6B20, #FBBF24);
+        }
+        .btn-danger {
+             background: linear-gradient(45deg, #DC2626, #F87171);
+        }
+        .btn-ai {
+            background: linear-gradient(45deg, #6366f1, #3b82f6);
+        }
+        .btn-gray {
+             background-color: #4A5568;
+        }
+        .btn-gray:hover {
+             background-color: #2D3748;
+        }
+        .btn-subtle {
+            background-color: transparent;
+            color: #a78bfa;
+            font-weight: 500;
+        }
+        .btn-subtle:hover {
+             color: #c4b5fd;
+        }
 
-      /* Feedback Styles */
-      .feedback-item {
-        background-color: rgba(255, 255, 255, 0.05);
-        padding: 0.75rem;
-        border-radius: 0.5rem;
-        border-left: 4px solid transparent;
-        transition: background-color 0.3s, border-color 0.3s;
-      }
-      .feedback-item.unread {
-        background-color: rgba(167, 139, 250, 0.15);
-        border-left-color: #a78bfa;
-      }
-      .feedback-meta {
-        font-size: 0.75rem;
-        color: #a0aec0;
-      }
-      .feedback-content {
-        font-size: 0.875rem;
-        color: #e0e0e0;
-        margin: 0.5rem 0;
-      }
-      .delete-feedback-btn {
-        font-size: 1.25rem;
-        cursor: pointer;
-        color: #9ca3af;
-        transition: color 0.2s;
-      }
-      .delete-feedback-btn:hover {
-        color: #f87171;
-      }
+        .drop-zone {
+            background-color: rgba(0, 0, 0, 0.25);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+            min-height: 200px;
+        }
+        .drop-zone.drag-over {
+            border-color: #818cf8;
+            background-color: rgba(79, 70, 229, 0.1);
+            box-shadow: inset 0 0 10px rgba(129, 140, 248, 0.5);
+        }
+
+        .student-card {
+            cursor: grab;
+            transition: all 0.2s;
+            position: relative;
+            background-color: rgba(40, 40, 80, 0.8);
+            border: 1px solid rgba(167, 139, 250, 0.5);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+        }
+        .student-card:active { cursor: grabbing; transform: scale(1.05); box-shadow: 0 5px 15px rgba(167, 139, 250, 0.3); }
+        .student-card.dragging { opacity: 0.5; transform: rotate(5deg); }
+        .student-card .student-id { font-weight: 700; color: #c4b5fd; }
+        .student-card .student-name { color: #e5e7eb; }
+        .student-card .student-score {
+            color: #fcd34d; /* amber-300 */
+            margin-top: 2px;
+            font-weight: bold;
+        }
+
+        .fab {
+            position: fixed;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(192, 132, 252, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+        .fab-secondary { background: linear-gradient(135deg, #d946ef, #8b5cf6); bottom: 100px; }
+        .fab-tertiary { background: linear-gradient(135deg, #3b82f6, #14b8a6); bottom: 30px; }
+        .fab:hover { transform: scale(1.1) rotate(15deg); box-shadow: 0 0 30px rgba(192, 132, 252, 0.8); }
+
+        table { border-collapse: separate; border-spacing: 0; }
+        th, td { border: 1px solid rgba(255, 255, 255, 0.1); padding: 8px; text-align: center; vertical-align: middle; }
+        thead th { background-color: rgba(0, 0, 0, 0.4); font-weight: 600; color: #c4b5fd; }
+        tbody tr { background-color: rgba(255, 255, 255, 0.05); }
+        tbody tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.1); }
+        .table-input { background-color: rgba(0, 0, 0, 0.4); border: 1px solid #4a5568; color: white; width: 100%; min-width: 40px; padding: 4px; border-radius: 4px; text-align: center; }
+        .table-input:focus { border-color: #a78bfa; background-color: rgba(0, 0, 0, 0.6); }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #a78bfa;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Seating Chart Styles */
+        .seat {
+            width: 55px; height: 55px; border: 2px solid #4a5568; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transition: all 0.2s;
+        }
+        .seat.occupied {
+            background-color: rgba(192, 132, 252, 0.2);
+            border-color: #c084fc;
+            box-shadow: 0 0 15px rgba(192, 132, 252, 0.5);
+            cursor: grab;
+        }
+        .seat.drag-over, #unassigned-students-list.drag-over {
+            border-style: solid; border-color: #818cf8; background-color: rgba(79, 70, 229, 0.1);
+            box-shadow: inset 0 0 10px rgba(129, 140, 248, 0.5);
+        }
+        .desk { display: flex; gap: 8px; }
+        .student-in-seat { font-size: 10px; text-align: center; line-height: 1.2; word-break: break-word; color: #f0f0f0; }
+        .student-in-seat .font-bold { color: #d8b4fe; }
+
+        .classroom-feature {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            color: #a78bfa;
+        }
+        /* Custom styles for the scoring table for better readability */
+        #individual-scoring-page thead th {
+            font-size: 11px;
+            padding: 4px 2px;
+            white-space: normal;
+            vertical-align: middle;
+        }
+        #individual-scoring-page .min-w-\[120px\] {
+            min-width: 120px;
+        }
+
+        /* Feedback Styles */
+        .feedback-item {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid transparent;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .feedback-item.unread {
+            background-color: rgba(167, 139, 250, 0.15);
+            border-left-color: #a78bfa;
+        }
+        .feedback-meta {
+            font-size: 0.75rem;
+            color: #a0aec0;
+        }
+        .feedback-content {
+            font-size: 0.875rem;
+            color: #e0e0e0;
+            margin: 0.5rem 0;
+        }
+        .delete-feedback-btn {
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: #9ca3af;
+            transition: color 0.2s;
+        }
+        .delete-feedback-btn:hover {
+            color: #f87171;
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
+
     <div class="min-h-screen w-full flex items-center justify-center p-4">
-      <!-- Trang Đăng Nhập -->
-      <div id="login-page" class="w-full max-w-md">
-        <div class="card shadow-xl rounded-2xl p-8 space-y-6">
-          <div class="text-center">
-            <h1 class="text-3xl font-bold">Hệ Thống Thi Đua</h1>
-            <p class="text-gray-400 mt-2">Đăng nhập để quản lý điểm</p>
-          </div>
-          <div class="space-y-4">
-            <div>
-              <label for="email" class="block text-sm font-medium text-gray-300"
-                >Email</label
-              >
-              <input
-                type="email"
-                id="email"
-                class="input-field mt-1 block w-full px-3 py-2 rounded-md shadow-sm"
-                placeholder="to1@gmail.com"
-              />
-            </div>
-            <div>
-              <label
-                for="password"
-                class="block text-sm font-medium text-gray-300"
-                >Mật khẩu</label
-              >
-              <input
-                type="password"
-                id="password"
-                class="input-field mt-1 block w-full px-3 py-2 rounded-md shadow-sm"
-                placeholder="••••••••"
-              />
-            </div>
-          </div>
-          <div id="login-error" class="text-red-400 text-sm text-center hidden">
-            Tên đăng nhập hoặc mật khẩu không hợp lệ.
-          </div>
-          <button
-            onclick="handleLogin()"
-            class="w-full flex justify-center py-3 px-4 rounded-lg shadow-lg text-sm btn btn-primary"
-          >
-            Đăng Nhập
-          </button>
-        </div>
-      </div>
 
-      <!-- Trang Chính - Quản Lý -->
-      <div id="main-page" class="hidden w-full max-w-7xl">
-        <div class="card shadow-xl rounded-2xl p-8 space-y-8">
-          <div
-            class="flex justify-between items-start border-b border-gray-700 pb-4"
-          >
-            <div>
-              <h1 class="text-3xl font-bold">Bảng Quản Lý Thi Đua</h1>
-              <p class="text-gray-400">Tổng quan các tổ và chức năng</p>
-            </div>
-            <div class="text-right">
-              <div
-                id="user-info"
-                class="text-sm font-medium text-gray-300"
-              ></div>
-              <button
-                onclick="handleLogout()"
-                class="text-sm font-medium btn-subtle"
-              >
-                Đăng xuất
-              </button>
-            </div>
-          </div>
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div id="left-column-main" class="lg:col-span-1 space-y-6">
-              <!-- Admin Feedback Viewer -->
-              <div
-                id="admin-feedback-viewer"
-                class="hidden bg-black bg-opacity-20 p-6 rounded-lg border border-gray-700 space-y-4"
-              >
-                <h2 class="text-xl font-semibold mb-2 text-center">
-                  📥 Hòm Thư Phản Hồi
-                </h2>
-                <div
-                  id="feedback-list"
-                  class="space-y-3 max-h-60 overflow-y-auto pr-2"
-                >
-                  <!-- Feedback messages will be loaded here -->
+        <!-- Trang Đăng Nhập -->
+        <div id="login-page" class="w-full max-w-md">
+            <div class="card shadow-xl rounded-2xl p-8 space-y-6">
+                <div class="text-center">
+                    <h1 class="text-3xl font-bold">Hệ Thống Thi Đua</h1>
+                    <p class="text-gray-400 mt-2">Đăng nhập để quản lý điểm</p>
                 </div>
-              </div>
-
-              <!-- Feedback section for Viewer -->
-              <div
-                id="viewer-feedback-section"
-                class="hidden bg-black bg-opacity-20 p-6 rounded-lg border border-gray-700 space-y-4"
-              >
-                <h2 class="text-xl font-semibold mb-2">Gửi Phản Hồi Tới Cô</h2>
-                <div class="space-y-4">
-                  <div>
-                    <label
-                      for="feedback-name"
-                      class="block text-sm font-medium text-gray-300"
-                      >Họ và Tên</label
-                    >
-                    <input
-                      type="text"
-                      id="feedback-name"
-                      class="input-field mt-1 block w-full px-3 py-2 rounded-md shadow-sm"
-                      placeholder="Nhập họ và tên của bạn"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      for="feedback-content"
-                      class="block text-sm font-medium text-gray-300"
-                      >Nội dung</label
-                    >
-                    <textarea
-                      id="feedback-content"
-                      class="input-field w-full h-24 p-2 rounded-md mt-1"
-                      placeholder="Nhập ý kiến của bạn..."
-                    ></textarea>
-                  </div>
-                </div>
-                <button
-                  onclick="sendFeedback()"
-                  class="w-full py-3 px-4 rounded-lg text-sm btn btn-secondary"
-                >
-                  Gửi Phản Hồi
+                 <div class="space-y-4">
+                     <div>
+                         <label for="email" class="block text-sm font-medium text-gray-300">Email</label>
+                         <input type="email" id="email" class="input-field mt-1 block w-full px-3 py-2 rounded-md shadow-sm" placeholder="to1@gmail.com">
+                     </div>
+                     <div>
+                         <label for="password" class="block text-sm font-medium text-gray-300">Mật khẩu</label>
+                         <input type="password" id="password" class="input-field mt-1 block w-full px-3 py-2 rounded-md shadow-sm" placeholder="••••••••">
+                     </div>
+                 </div>
+                <div id="login-error" class="text-red-400 text-sm text-center hidden">Tên đăng nhập hoặc mật khẩu không hợp lệ.</div>
+                <button onclick="handleLogin()" class="w-full flex justify-center py-3 px-4 rounded-lg shadow-lg text-sm btn btn-primary">
+                    Đăng Nhập
                 </button>
-                <p
-                  id="feedback-status"
-                  class="text-sm text-green-400 text-center hidden mt-2"
-                ></p>
-              </div>
-
-              <div
-                id="functions-section"
-                class="bg-black bg-opacity-20 p-6 rounded-lg border border-gray-700 space-y-4"
-              >
-                <h2 class="text-xl font-semibold mb-2">Chức năng</h2>
-                <button
-                  onclick="getAIFeedback()"
-                  class="w-full py-3 px-4 rounded-lg text-sm btn btn-ai"
-                >
-                  ✨ Nhận Xét Tuần từ AI - Chức năng này Tuấn đang sửa
-                </button>
-                <button
-                  id="finalize-week-button"
-                  onclick="openFinalizeWeekModal()"
-                  class="hidden w-full py-3 px-4 rounded-lg text-sm btn btn-primary"
-                >
-                  Chốt Điểm Tuần
-                </button>
-                <button
-                  id="clear-data-button"
-                  onclick="openClearDataModal()"
-                  class="hidden w-full py-3 px-4 rounded-lg text-sm btn btn-danger"
-                >
-                  Xóa Sạch Dữ Liệu
-                </button>
-              </div>
-
-              <div
-                id="leaderboard-section"
-                class="bg-black bg-opacity-20 p-6 rounded-lg border border-gray-700 space-y-4"
-              >
-                <h2 class="text-xl font-semibold mb-2 text-center">
-                  🏆 Bảng Xếp Hạng Tuần 🏆
-                </h2>
-                <div id="leaderboard-list" class="space-y-3">
-                  <!-- Leaderboard content will be generated by JS -->
-                </div>
-              </div>
             </div>
-            <div class="lg:col-span-2 space-y-6">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div
-                  class="bg-black bg-opacity-20 p-4 rounded-lg border border-gray-700 flex flex-col"
-                >
-                  <h3 class="font-semibold text-center mb-2">Tổ 1</h3>
-                  <div
-                    id="group-1"
-                    data-groupid="1"
-                    class="drop-zone grid grid-cols-2 gap-2 flex-grow p-2"
-                  ></div>
-                  <button
-                    id="score-group-1-btn"
-                    onclick="goToScoringPage(1)"
-                    class="mt-4 w-full py-2 px-4 rounded-lg text-sm btn btn-primary hidden"
-                  >
-                    Chấm Điểm Tổ 1
-                  </button>
-                </div>
-                <div
-                  class="bg-black bg-opacity-20 p-4 rounded-lg border border-gray-700 flex flex-col"
-                >
-                  <h3 class="font-semibold text-center mb-2">Tổ 2</h3>
-                  <div
-                    id="group-2"
-                    data-groupid="2"
-                    class="drop-zone grid grid-cols-2 gap-2 flex-grow p-2"
-                  ></div>
-                  <button
-                    id="score-group-2-btn"
-                    onclick="goToScoringPage(2)"
-                    class="mt-4 w-full py-2 px-4 rounded-lg text-sm btn btn-primary hidden"
-                  >
-                    Chấm Điểm Tổ 2
-                  </button>
-                </div>
-                <div
-                  class="bg-black bg-opacity-20 p-4 rounded-lg border border-gray-700 flex flex-col"
-                >
-                  <h3 class="font-semibold text-center mb-2">Tổ 3</h3>
-                  <div
-                    id="group-3"
-                    data-groupid="3"
-                    class="drop-zone grid grid-cols-2 gap-2 flex-grow p-2"
-                  ></div>
-                  <button
-                    id="score-group-3-btn"
-                    onclick="goToScoringPage(3)"
-                    class="mt-4 w-full py-2 px-4 rounded-lg text-sm btn btn-primary hidden"
-                  >
-                    Chấm Điểm Tổ 3
-                  </button>
-                </div>
-                <div
-                  class="bg-black bg-opacity-20 p-4 rounded-lg border border-gray-700 flex flex-col"
-                >
-                  <h3 class="font-semibold text-center mb-2">Tổ 4</h3>
-                  <div
-                    id="group-4"
-                    data-groupid="4"
-                    class="drop-zone grid grid-cols-2 gap-2 flex-grow p-2"
-                  ></div>
-                  <button
-                    id="score-group-4-btn"
-                    onclick="goToScoringPage(4)"
-                    class="mt-4 w-full py-2 px-4 rounded-lg text-sm btn btn-primary hidden"
-                  >
-                    Chấm Điểm Tổ 4
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
 
-      <!-- Sổ Theo Dõi Thi Đua -->
-      <div id="individual-scoring-page" class="hidden w-full max-w-screen-xl">
-        <div class="card shadow-xl rounded-2xl p-6 md:p-8 space-y-6">
-          <h1
-            id="scoring-page-title"
-            class="text-2xl md:text-3xl font-bold text-center"
-          >
-            SỔ THEO DÕI THI ĐUA
-          </h1>
-          <input
-            type="text"
-            id="scoring-page-subtitle"
-            class="text-center text-gray-400 -mt-4 bg-transparent w-full border-0 focus:ring-0 focus:outline-none disabled:cursor-default"
-            onchange="handleSubtitleChange(this)"
-            disabled
-          />
-          <div class="overflow-x-auto">
-            <table class="min-w-full text-xs">
-              <thead>
-                <tr>
-                  <th rowspan="2">STT</th>
-                  <th rowspan="2" class="min-w-[120px]">Tên</th>
-                  <th colspan="10">Điểm cộng / trừ (lần)</th>
-                  <th rowspan="2">Tổng điểm</th>
-                  <th rowspan="2">Xếp loại</th>
-                </tr>
-                <tr>
-                  <th>Điểm<br />tốt<br />(+20)</th>
-                  <th>Bị ghi<br />SĐB<br />(-20)</th>
-                  <th>Nói<br />chuyện<br />(-10)</th>
-                  <th>Sử dụng<br />điện thoại<br />(-50)</th>
-                  <th>GV<br />nhắc nhở<br />(-10)</th>
-                  <th>Xem tài<br />liệu, KTC<br />(-50)</th>
-                  <th>Trang<br />phục, KQ<br />(-10)</th>
-                  <th>Không<br />học bài<br />(-20)</th>
-                  <th>Phát biểu<br />xây dựng<br />(+10)</th>
-                  <th>Tham gia<br />phong trào<br />(+50)</th>
-                </tr>
-              </thead>
-              <tbody id="individual-scoring-tbody"></tbody>
-              <tfoot class="font-bold">
-                <tr>
-                  <td colspan="2">TỔNG ĐIỂM</td>
-                  <td id="total-col-diemtot">0</td>
-                  <td id="total-col-ghisodb">0</td>
-                  <td id="total-col-noichuyen">0</td>
-                  <td id="total-col-sudungdienthoai">0</td>
-                  <td id="total-col-gvnhacnho">0</td>
-                  <td id="total-col-xemtailieu">0</td>
-                  <td id="total-col-trangphuc">0</td>
-                  <td id="total-col-khonghocbai">0</td>
-                  <td id="total-col-phatbieu">0</td>
-                  <td id="total-col-thamgiaphongtrao">0</td>
-                  <td id="total-final" class="bg-purple-900 text-lg">0</td>
-                  <td></td>
-                  <!-- Empty cell for Xep Loai footer -->
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-          <div
-            class="text-left text-sm text-gray-300 border-t border-gray-700 pt-4"
-          >
-            <p>
-              <strong class="text-purple-300">Ghi chú:</strong> Mỗi bạn có 50
-              điểm khởi đầu.
-            </p>
-            <p><strong class="text-purple-300">Quy định xếp loại:</strong></p>
-            <ul class="list-disc list-inside ml-4">
-              <li>
-                <strong class="text-green-400">Tốt:</strong> từ 90 điểm trở lên
-              </li>
-              <li>
-                <strong class="text-blue-400">Khá:</strong> từ 65 đến dưới 90
-                điểm
-              </li>
-              <li>
-                <strong class="text-yellow-400">Đạt:</strong> từ 50 đến dưới 65
-                điểm
-              </li>
-              <li>
-                <strong class="text-red-400">Chưa đạt:</strong> dưới 50 điểm
-              </li>
-            </ul>
-          </div>
-          <div class="text-center pt-4">
-            <button
-              onclick="goBackToMain()"
-              class="px-6 py-2 rounded-lg shadow-md text-sm btn btn-gray"
-            >
-              Quay Lại
-            </button>
-          </div>
-        </div>
-      </div>
+        <!-- Trang Chính - Quản Lý -->
+        <div id="main-page" class="hidden w-full max-w-7xl">
+            <div class="card shadow-xl rounded-2xl p-8 space-y-8">
+                <div class="flex justify-between items-start border-b border-gray-700 pb-4">
+                    <div>
+                        <h1 class="text-3xl font-bold">Bảng Quản Lý Thi Đua</h1>
+                        <p class="text-gray-400">Tổng quan các tổ và chức năng</p>
+                    </div>
+                    <div class="text-right">
+                         <div id="user-info" class="text-sm font-medium text-gray-300"></div>
+                         <button onclick="handleLogout()" class="text-sm font-medium btn-subtle">Đăng xuất</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div id="left-column-main" class="lg:col-span-1 space-y-6">
+                        <!-- Admin Feedback Viewer -->
+                        <div id="admin-feedback-viewer" class="hidden bg-black bg-opacity-20 p-6 rounded-lg border border-gray-700 space-y-4">
+                            <h2 class="text-xl font-semibold mb-2 text-center">📥 Hòm Thư Phản Hồi</h2>
+                            <div id="feedback-list" class="space-y-3 max-h-60 overflow-y-auto pr-2">
+                                <!-- Feedback messages will be loaded here -->
+                            </div>
+                        </div>
 
-      <!-- Trang Tổng Kết Tuần & Năm -->
-      <div id="monthly-summary-page" class="hidden w-full max-w-6xl">
-        <div class="card shadow-xl rounded-2xl p-6 md:p-8 space-y-8">
-          <h1 class="text-2xl md:text-3xl font-bold text-center">
-            Tổng Kết Thi Đua Các Tuần
-          </h1>
-          <div class="overflow-x-auto">
-            <table class="min-w-full">
-              <thead id="weekly-summary-header"></thead>
-              <tbody id="weekly-summary-body"></tbody>
-            </table>
-          </div>
-          <div
-            id="yearly-summary-section"
-            class="pt-8 border-t-2 border-dashed border-gray-700"
-          >
-            <h2 class="text-xl md:text-2xl font-bold text-center mb-6">
-              Tổng Kết Năm Học
-            </h2>
-            <div class="flex items-center justify-center gap-4 mb-6">
-              <label class="font-semibold">Số tuần học thực tế (n):</label>
-              <div class="flex items-center gap-2">
-                <span
-                  id="total-weeks-display"
-                  class="text-2xl font-bold text-purple-400 w-12 text-center"
-                  >0</span
-                >
-                <button
-                  id="increment-n-button"
-                  onclick="incrementN()"
-                  class="hidden w-10 h-10 bg-gray-700 text-white rounded-full text-xl font-bold hover:bg-gray-600"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-            <div class="text-center">
-              <button
-                onclick="calculateYearlySummary()"
-                class="px-8 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700"
-              >
-                Tính Tổng Kết Năm
-              </button>
-            </div>
-            <div id="yearly-summary-results" class="mt-6 space-y-4"></div>
-          </div>
-          <div class="text-center pt-4">
-            <button
-              onclick="goBackToMain()"
-              class="px-6 py-2 rounded-lg shadow-md text-sm btn btn-gray"
-            >
-              Quay Lại
-            </button>
-          </div>
-        </div>
-      </div>
+                        <!-- Feedback section for Viewer -->
+                        <div id="viewer-feedback-section" class="hidden bg-black bg-opacity-20 p-6 rounded-lg border border-gray-700 space-y-4">
+                            <h2 class="text-xl font-semibold mb-2">Gửi Phản Hồi Tới Admin</h2>
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="feedback-name" class="block text-sm font-medium text-gray-300">Họ và Tên</label>
+                                    <input type="text" id="feedback-name" class="input-field mt-1 block w-full px-3 py-2 rounded-md shadow-sm" placeholder="Nhập họ và tên của bạn">
+                                </div>
+                                <div>
+                                    <label for="feedback-content" class="block text-sm font-medium text-gray-300">Nội dung</label>
+                                    <textarea id="feedback-content" class="input-field w-full h-24 p-2 rounded-md mt-1" placeholder="Nhập ý kiến của bạn..."></textarea>
+                                </div>
+                            </div>
+                            <button onclick="sendFeedback()" class="w-full py-3 px-4 rounded-lg text-sm btn btn-secondary">Gửi Phản Hồi</button>
+                            <p id="feedback-status" class="text-sm text-green-400 text-center hidden mt-2"></p>
+                        </div>
+                          
+                        <div id="functions-section" class="bg-black bg-opacity-20 p-6 rounded-lg border border-gray-700 space-y-4">
+                            <h2 class="text-xl font-semibold mb-2">Chức năng</h2>
+                            <button onclick="getAIFeedback()" class="w-full py-3 px-4 rounded-lg text-sm btn btn-ai">
+                                ✨ Nhận Xét Tuần từ AI
+                            </button>
+                            <button id="finalize-week-button" onclick="openFinalizeWeekModal()" class="hidden w-full py-3 px-4 rounded-lg text-sm btn btn-primary">
+                                Chốt Điểm Tuần
+                            </button>
+                            <button id="clear-data-button" onclick="openClearDataModal()" class="hidden w-full py-3 px-4 rounded-lg text-sm btn btn-danger">
+                                Xóa Sạch Dữ Liệu
+                            </button>
+                        </div>
 
-      <!-- Trang Sơ Đồ Lớp -->
-      <div id="seating-chart-page" class="hidden w-full max-w-7xl">
-        <div class="card shadow-xl rounded-2xl p-6 md:p-8 space-y-6">
-          <h1 class="text-2xl md:text-3xl font-bold text-center">
-            Sơ Đồ Lớp Học
-          </h1>
-          <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <div class="lg:col-span-3">
-              <div
-                class="classroom-feature text-center py-2 rounded-lg font-bold mb-4 shadow-md"
-              >
-                BẢNG
-              </div>
-              <div
-                class="classroom-feature w-48 h-16 mx-auto rounded-md mb-8 flex items-center justify-center font-semibold shadow-lg"
-              >
-                Bàn Giáo Viên
-              </div>
-              <div class="flex justify-around gap-8">
-                <div
-                  id="left-desk-block"
-                  class="grid grid-cols-2 gap-y-6 gap-x-4"
-                ></div>
-                <div
-                  id="right-desk-block"
-                  class="grid grid-cols-2 gap-y-6 gap-x-4"
-                ></div>
-              </div>
+                        <div id="leaderboard-section" class="bg-black bg-opacity-20 p-6 rounded-lg border border-gray-700 space-y-4">
+                            <h2 class="text-xl font-semibold mb-2 text-center">🏆 Bảng Xếp Hạng Tuần 🏆</h2>
+                            <div id="leaderboard-list" class="space-y-3">
+                                <!-- Leaderboard content will be generated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div class="bg-black bg-opacity-20 p-4 rounded-lg border border-gray-700 flex flex-col">
+                                <h3 class="font-semibold text-center mb-2">Tổ 1</h3>
+                                <div id="group-1" data-groupid="1" class="drop-zone grid grid-cols-2 gap-2 flex-grow p-2"></div>
+                                <button id="score-group-1-btn" onclick="goToScoringPage(1)" class="mt-4 w-full py-2 px-4 rounded-lg text-sm btn btn-primary hidden">Chấm Điểm Tổ 1</button>
+                            </div>
+                            <div class="bg-black bg-opacity-20 p-4 rounded-lg border border-gray-700 flex flex-col">
+                                <h3 class="font-semibold text-center mb-2">Tổ 2</h3>
+                                <div id="group-2" data-groupid="2" class="drop-zone grid grid-cols-2 gap-2 flex-grow p-2"></div>
+                                <button id="score-group-2-btn" onclick="goToScoringPage(2)" class="mt-4 w-full py-2 px-4 rounded-lg text-sm btn btn-primary hidden">Chấm Điểm Tổ 2</button>
+                            </div>
+                            <div class="bg-black bg-opacity-20 p-4 rounded-lg border border-gray-700 flex flex-col">
+                                <h3 class="font-semibold text-center mb-2">Tổ 3</h3>
+                                <div id="group-3" data-groupid="3" class="drop-zone grid grid-cols-2 gap-2 flex-grow p-2"></div>
+                                <button id="score-group-3-btn" onclick="goToScoringPage(3)" class="mt-4 w-full py-2 px-4 rounded-lg text-sm btn btn-primary hidden">Chấm Điểm Tổ 3</button>
+                            </div>
+                             <div class="bg-black bg-opacity-20 p-4 rounded-lg border border-gray-700 flex flex-col">
+                                <h3 class="font-semibold text-center mb-2">Tổ 4</h3>
+                                <div id="group-4" data-groupid="4" class="drop-zone grid grid-cols-2 gap-2 flex-grow p-2"></div>
+                                <button id="score-group-4-btn" onclick="goToScoringPage(4)" class="mt-4 w-full py-2 px-4 rounded-lg text-sm btn btn-primary hidden">Chấm Điểm Tổ 4</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div
-              class="lg:col-span-1 bg-black bg-opacity-20 p-4 rounded-lg border border-gray-700"
-            >
-              <h2 class="font-bold text-center mb-4">Học sinh chưa xếp chỗ</h2>
-              <div
-                id="unassigned-students-list"
-                class="space-y-2 h-96 overflow-y-auto drop-zone p-2"
-              ></div>
-            </div>
-          </div>
-          <div class="text-center pt-4 border-t border-gray-700 mt-4">
-            <button
-              onclick="goBackToMain()"
-              class="px-6 py-2 rounded-lg shadow-md text-sm btn btn-gray"
-            >
-              Quay Lại
-            </button>
-          </div>
         </div>
-      </div>
+        
+        <!-- Sổ Theo Dõi Thi Đua -->
+        <div id="individual-scoring-page" class="hidden w-full max-w-screen-xl">
+            <div class="card shadow-xl rounded-2xl p-6 md:p-8 space-y-6">
+                <h1 id="scoring-page-title" class="text-2xl md:text-3xl font-bold text-center">SỔ THEO DÕI THI ĐUA</h1>
+                <input type="text" id="scoring-page-subtitle" class="text-center text-gray-400 -mt-4 bg-transparent w-full border-0 focus:ring-0 focus:outline-none disabled:cursor-default" onchange="handleSubtitleChange(this)" disabled>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-xs">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">STT</th>
+                                <th rowspan="2" class="min-w-[120px]">Tên</th>
+                                <th colspan="10">Điểm cộng / trừ (lần)</th>
+                                <th rowspan="2">Tổng điểm</th>
+                                <th rowspan="2">Xếp loại</th>
+                            </tr>
+                            <tr>
+                                <th>Điểm<br>tốt<br>(+20)</th>
+                                <th>Bị ghi<br>SĐB<br>(-20)</th>
+                                <th>Nói<br>chuyện<br>(-10)</th>
+                                <th>Sử dụng<br>điện thoại<br>(-50)</th>
+                                <th>GV<br>nhắc nhở<br>(-10)</th>
+                                <th>Xem tài<br>liệu, KTC<br>(-50)</th>
+                                <th>Trang<br>phục, KQ<br>(-10)</th>
+                                <th>Không<br>học bài<br>(-20)</th>
+                                <th>Phát biểu<br>xây dựng<br>(+10)</th>
+                                <th>Tham gia<br>phong trào<br>(+50)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="individual-scoring-tbody"></tbody>
+                        <tfoot class="font-bold">
+                            <tr>
+                                <td colspan="2">TỔNG ĐIỂM</td>
+                                <td id="total-col-diemtot">0</td>
+                                <td id="total-col-ghisodb">0</td>
+                                <td id="total-col-noichuyen">0</td>
+                                <td id="total-col-sudungdienthoai">0</td>
+                                <td id="total-col-gvnhacnho">0</td>
+                                <td id="total-col-xemtailieu">0</td>
+                                <td id="total-col-trangphuc">0</td>
+                                <td id="total-col-khonghocbai">0</td>
+                                <td id="total-col-phatbieu">0</td>
+                                <td id="total-col-thamgiaphongtrao">0</td>
+                                <td id="total-final" class="bg-purple-900 text-lg">0</td>
+                                <td></td> <!-- Empty cell for Xep Loai footer -->
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="text-left text-sm text-gray-300 border-t border-gray-700 pt-4">
+                    <p><strong class="text-purple-300">Ghi chú:</strong> Mỗi bạn có 50 điểm khởi đầu.</p>
+                    <p><strong class="text-purple-300">Quy định xếp loại:</strong></p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong class="text-green-400">Tốt:</strong> từ 90 điểm trở lên</li>
+                        <li><strong class="text-blue-400">Khá:</strong> từ 65 đến dưới 90 điểm</li>
+                        <li><strong class="text-yellow-400">Đạt:</strong> từ 50 đến dưới 65 điểm</li>
+                        <li><strong class="text-red-400">Chưa đạt:</strong> dưới 50 điểm</li>
+                    </ul>
+                </div>
+                 <div class="text-center pt-4">
+                      <button onclick="goBackToMain()" class="px-6 py-2 rounded-lg shadow-md text-sm btn btn-gray">Quay Lại</button>
+                 </div>
+            </div>
+        </div>
+
+        <!-- Trang Tổng Kết Tuần & Năm -->
+        <div id="monthly-summary-page" class="hidden w-full max-w-6xl">
+            <div class="card shadow-xl rounded-2xl p-6 md:p-8 space-y-8">
+                 <h1 class="text-2xl md:text-3xl font-bold text-center">Tổng Kết Thi Đua Các Tuần</h1>
+                 <div class="overflow-x-auto">
+                     <table class="min-w-full">
+                         <thead id="weekly-summary-header"></thead>
+                         <tbody id="weekly-summary-body"></tbody>
+                     </table>
+                 </div>
+                <div id="yearly-summary-section" class="pt-8 border-t-2 border-dashed border-gray-700">
+                    <h2 class="text-xl md:text-2xl font-bold text-center mb-6">Tổng Kết Năm Học</h2>
+                    <div class="flex items-center justify-center gap-4 mb-6">
+                        <label class="font-semibold">Số tuần học thực tế (n):</label>
+                        <div class="flex items-center gap-2">
+                           <span id="total-weeks-display" class="text-2xl font-bold text-purple-400 w-12 text-center">0</span>
+                           <button id="increment-n-button" onclick="incrementN()" class="hidden w-10 h-10 bg-gray-700 text-white rounded-full text-xl font-bold hover:bg-gray-600">+</button>
+                        </div>
+                    </div>
+                     <div class="text-center">
+                        <button onclick="calculateYearlySummary()" class="px-8 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700">
+                            Tính Tổng Kết Năm
+                        </button>
+                    </div>
+                    <div id="yearly-summary-results" class="mt-6 space-y-4"></div>
+                </div>
+                 <div class="text-center pt-4">
+                     <button onclick="goBackToMain()" class="px-6 py-2 rounded-lg shadow-md text-sm btn btn-gray">Quay Lại</button>
+                 </div>
+            </div>
+        </div>
+
+        <!-- Trang Sơ Đồ Lớp -->
+        <div id="seating-chart-page" class="hidden w-full max-w-7xl">
+             <div class="card shadow-xl rounded-2xl p-6 md:p-8 space-y-6">
+                <h1 class="text-2xl md:text-3xl font-bold text-center">Sơ Đồ Lớp Học</h1>
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    <div class="lg:col-span-3">
+                        <div class="classroom-feature text-center py-2 rounded-lg font-bold mb-4 shadow-md">BẢNG</div>
+                        <div class="classroom-feature w-48 h-16 mx-auto rounded-md mb-8 flex items-center justify-center font-semibold shadow-lg">Bàn Giáo Viên</div>
+                        <div class="flex justify-around gap-8">
+                            <div id="left-desk-block" class="grid grid-cols-2 gap-y-6 gap-x-4"></div>
+                            <div id="right-desk-block" class="grid grid-cols-2 gap-y-6 gap-x-4"></div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-1 bg-black bg-opacity-20 p-4 rounded-lg border border-gray-700">
+                        <h2 class="font-bold text-center mb-4">Học sinh chưa xếp chỗ</h2>
+                        <div id="unassigned-students-list" class="space-y-2 h-96 overflow-y-auto drop-zone p-2"></div>
+                    </div>
+                </div>
+                 <div class="text-center pt-4 border-t border-gray-700 mt-4">
+                     <button onclick="goBackToMain()" class="px-6 py-2 rounded-lg shadow-md text-sm btn btn-gray">
+                         Quay Lại
+                     </button>
+                 </div>
+            </div>
+        </div>
     </div>
-
+    
     <!-- Các nút FAB -->
     <div id="fab-container" class="hidden">
-      <div
-        onclick="showMonthlySummaryPage()"
-        class="fab fab-secondary"
-        title="Xem tổng kết tuần/năm"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-8 w-8"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      </div>
-      <div
-        onclick="showSeatingChartPage()"
-        class="fab fab-tertiary"
-        title="Sơ đồ lớp"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-8 w-8"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM10 16v-4m0-4v4m4 4v-4m0-4v4"
-          />
-        </svg>
-      </div>
+        <div onclick="showMonthlySummaryPage()" class="fab fab-secondary" title="Xem tổng kết tuần/năm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        </div>
+         <div onclick="showSeatingChartPage()" class="fab fab-tertiary" title="Sơ đồ lớp">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM10 16v-4m0-4v4m4 4v-4m0-4v4" />
+            </svg>
+        </div>
     </div>
-
+    
     <!-- Các Modals -->
-    <div
-      id="clear-data-modal"
-      class="hidden fixed inset-0 bg-black bg-opacity-70 h-full w-full flex items-center justify-center z-50"
-    >
-      <div
-        class="card mx-auto p-8 border w-full max-w-md rounded-2xl space-y-6 text-center"
-      >
-        <h3 class="text-2xl font-bold">Xác nhận Xóa Dữ Liệu</h3>
-        <div class="mt-4 px-7 py-3">
-          <p class="text-md text-gray-300">
-            Bạn có chắc chắn muốn xóa TOÀN BỘ dữ liệu không?
-            <strong class="text-red-400"
-              >Hành động này không thể hoàn tác.</strong
-            >
-          </p>
+     <div id="clear-data-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 h-full w-full flex items-center justify-center z-50">
+        <div class="card mx-auto p-8 border w-full max-w-md rounded-2xl space-y-6 text-center">
+            <h3 class="text-2xl font-bold">Xác nhận Xóa Dữ Liệu</h3>
+            <div class="mt-4 px-7 py-3">
+                <p class="text-md text-gray-300">Bạn có chắc chắn muốn xóa TOÀN BỘ dữ liệu không? <strong class="text-red-400">Hành động này không thể hoàn tác.</strong></p>
+            </div>
+            <div class="items-center px-4 py-3 space-x-4">
+                <button onclick="clearAllData()" class="px-6 py-2 btn btn-danger text-base font-medium rounded-md">Xác nhận Xóa</button>
+                <button onclick="closeClearDataModal()" class="px-6 py-2 bg-gray-600 text-white text-base font-medium rounded-md hover:bg-gray-500">Hủy</button>
+            </div>
         </div>
-        <div class="items-center px-4 py-3 space-x-4">
-          <button
-            onclick="clearAllData()"
-            class="px-6 py-2 btn btn-danger text-base font-medium rounded-md"
-          >
-            Xác nhận Xóa
-          </button>
-          <button
-            onclick="closeClearDataModal()"
-            class="px-6 py-2 bg-gray-600 text-white text-base font-medium rounded-md hover:bg-gray-500"
-          >
-            Hủy
-          </button>
+     </div>
+    <div id="delete-student-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 h-full w-full flex items-center justify-center z-50">
+         <div class="card mx-auto p-8 border w-full max-w-md rounded-2xl space-y-6 text-center">
+            <h3 class="text-2xl font-bold">Xác nhận Xóa Học Sinh</h3>
+            <div class="mt-4 px-7 py-3">
+                <p id="delete-student-confirm-text" class="text-md text-gray-300"></p>
+            </div>
+            <div class="items-center px-4 py-3 space-x-4">
+                <button onclick="confirmDeleteStudent()" class="px-6 py-2 btn btn-danger text-base font-medium rounded-md">Xóa</button>
+                <button onclick="closeDeleteStudentModal()" class="px-6 py-2 bg-gray-600 text-white text-base font-medium rounded-md hover:bg-gray-500">Hủy</button>
+                <input type="hidden" id="student-id-to-delete">
+            </div>
         </div>
-      </div>
     </div>
-    <div
-      id="delete-student-modal"
-      class="hidden fixed inset-0 bg-black bg-opacity-70 h-full w-full flex items-center justify-center z-50"
-    >
-      <div
-        class="card mx-auto p-8 border w-full max-w-md rounded-2xl space-y-6 text-center"
-      >
-        <h3 class="text-2xl font-bold">Xác nhận Xóa Học Sinh</h3>
-        <div class="mt-4 px-7 py-3">
-          <p id="delete-student-confirm-text" class="text-md text-gray-300"></p>
+     <div id="finalize-week-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 h-full w-full flex items-center justify-center z-50">
+        <div class="card mx-auto p-8 border w-full max-w-md rounded-2xl space-y-6 text-center">
+            <h3 class="text-2xl font-bold">Xác nhận Chốt Điểm Tuần</h3>
+            <div id="finalize-week-summary" class="mt-4 text-left p-4 bg-black bg-opacity-20 rounded-lg"></div>
+            <p class="text-md text-gray-300 mt-4">Bạn có muốn reset điểm của tất cả học sinh về 0 để bắt đầu tuần mới không?</p>
+            <div class="items-center px-4 py-3 space-x-4">
+                <button onclick="confirmFinalizeWeek(true)" class="px-6 py-2 btn btn-primary text-base font-medium rounded-md">Lưu và Reset</button>
+                <button onclick="confirmFinalizeWeek(false)" class="px-6 py-2 bg-gray-700 text-white text-base font-medium rounded-md hover:bg-gray-600">Chỉ Lưu</button>
+                <button onclick="closeFinalizeWeekModal()" class="px-6 py-2 bg-gray-600 text-white text-base font-medium rounded-md hover:bg-gray-500">Hủy</button>
+            </div>
         </div>
-        <div class="items-center px-4 py-3 space-x-4">
-          <button
-            onclick="confirmDeleteStudent()"
-            class="px-6 py-2 btn btn-danger text-base font-medium rounded-md"
-          >
-            Xóa
-          </button>
-          <button
-            onclick="closeDeleteStudentModal()"
-            class="px-6 py-2 bg-gray-600 text-white text-base font-medium rounded-md hover:bg-gray-500"
-          >
-            Hủy
-          </button>
-          <input type="hidden" id="student-id-to-delete" />
-        </div>
-      </div>
     </div>
-    <div
-      id="finalize-week-modal"
-      class="hidden fixed inset-0 bg-black bg-opacity-70 h-full w-full flex items-center justify-center z-50"
-    >
-      <div
-        class="card mx-auto p-8 border w-full max-w-md rounded-2xl space-y-6 text-center"
-      >
-        <h3 class="text-2xl font-bold">Xác nhận Chốt Điểm Tuần</h3>
-        <div
-          id="finalize-week-summary"
-          class="mt-4 text-left p-4 bg-black bg-opacity-20 rounded-lg"
-        ></div>
-        <p class="text-md text-gray-300 mt-4">
-          Bạn có muốn reset điểm của tất cả học sinh về 0 để bắt đầu tuần mới
-          không?
-        </p>
-        <div class="items-center px-4 py-3 space-x-4">
-          <button
-            onclick="confirmFinalizeWeek(true)"
-            class="px-6 py-2 btn btn-primary text-base font-medium rounded-md"
-          >
-            Lưu và Reset
-          </button>
-          <button
-            onclick="confirmFinalizeWeek(false)"
-            class="px-6 py-2 bg-gray-700 text-white text-base font-medium rounded-md hover:bg-gray-600"
-          >
-            Chỉ Lưu
-          </button>
-          <button
-            onclick="closeFinalizeWeekModal()"
-            class="px-6 py-2 bg-gray-600 text-white text-base font-medium rounded-md hover:bg-gray-500"
-          >
-            Hủy
-          </button>
+    <div id="ai-feedback-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 h-full w-full flex items-center justify-center z-50">
+        <div class="card mx-auto p-8 border w-full max-w-lg rounded-2xl space-y-6 text-center">
+            <h3 class="text-2xl font-bold">Nhận xét Thi Đua Tuần Này ✨</h3>
+            <div id="ai-feedback-content" class="mt-4 px-7 py-3 min-h-[100px] flex items-center justify-center"></div>
+            <div class="items-center px-4 py-3">
+                <button onclick="closeAIFeedbackModal()" class="px-6 py-2 btn btn-gray text-base font-medium rounded-md">Đóng</button>
+            </div>
         </div>
-      </div>
-    </div>
-    <div
-      id="ai-feedback-modal"
-      class="hidden fixed inset-0 bg-black bg-opacity-70 h-full w-full flex items-center justify-center z-50"
-    >
-      <div
-        class="card mx-auto p-8 border w-full max-w-lg rounded-2xl space-y-6 text-center"
-      >
-        <h3 class="text-2xl font-bold">Nhận xét Thi Đua Tuần Này ✨</h3>
-        <div
-          id="ai-feedback-content"
-          class="mt-4 px-7 py-3 min-h-[100px] flex items-center justify-center"
-        ></div>
-        <div class="items-center px-4 py-3">
-          <button
-            onclick="closeAIFeedbackModal()"
-            class="px-6 py-2 btn btn-gray text-base font-medium rounded-md"
-          >
-            Đóng
-          </button>
-        </div>
-      </div>
     </div>
 
     <script>
-      // --- SCRIPT ĐẦY ĐỦ ---
-      const predefinedUsers = {
-        "to1@gmail.com": { role: "Tổ 1", groupId: 1 },
-        "to2@gmail.com": { role: "Tổ 2", groupId: 2 },
-        "to3@gmail.com": { role: "Tổ 3", groupId: 3 },
-        "to4@gmail.com": { role: "Tổ 4", groupId: 4 },
-        "admin@check.com": { role: "ADMIN", groupId: null },
-        "view@check.com": { role: "VIEWER", groupId: null },
-      };
-      let students = [];
-      let detailedScores = {};
-      let weeklySummaries = { weeks: [], totalWeeks: 0 };
-      let classInfo = {};
-      let unsubscribeStudents,
-        unsubscribeScores,
-        unsubscribeWeekly,
-        unsubscribeClassInfo,
-        unsubscribeFeedback;
-      let currentUserRole = null;
-      let currentUserGroupId = null;
-      let targetGroupIdForScoring = null;
-      let currentScoringGroupId = null;
+        // --- SCRIPT ĐẦY ĐỦ ---
+        const predefinedUsers = { 'to1@gmail.com': { role: 'Tổ 1', groupId: 1 }, 'to2@gmail.com': { role: 'Tổ 2', groupId: 2 }, 'to3@gmail.com': { role: 'Tổ 3', groupId: 3 }, 'to4@gmail.com': { role: 'Tổ 4', groupId: 4 }, 'admin@check.com': { role: 'ADMIN', groupId: null }, 'viewer@gmail.com': { role: 'VIEWER', groupId: null } };
+        let students = [];
+        let detailedScores = {};
+        let weeklySummaries = { weeks: [], totalWeeks: 0 };
+        let classInfo = {};
+        let unsubscribeStudents, unsubscribeScores, unsubscribeWeekly, unsubscribeClassInfo, unsubscribeFeedback; 
+        let currentUserRole = null;
+        let currentUserGroupId = null;
+        let targetGroupIdForScoring = null;
+        let currentScoringGroupId = null;
+        
+        const studentsDocRef = () => db.collection("classes").doc("mainClass");
+        const weeklyScoresDocRef = () => db.collection("classes").doc("currentWeekDetailedScores");
+        const weeklySummariesDocRef = () => db.collection("classes").doc("weeklySummaries");
+        const classInfoDocRef = () => db.collection("classes").doc("classInfo");
+        const feedbackCollectionRef = () => db.collection("feedback");
 
-      const studentsDocRef = () => db.collection("classes").doc("mainClass");
-      const weeklyScoresDocRef = () =>
-        db.collection("classes").doc("currentWeekDetailedScores");
-      const weeklySummariesDocRef = () =>
-        db.collection("classes").doc("weeklySummaries");
-      const classInfoDocRef = () => db.collection("classes").doc("classInfo");
-      const feedbackCollectionRef = () => db.collection("feedback");
 
-      const loginPage = document.getElementById("login-page"),
-        mainPage = document.getElementById("main-page"),
-        individualScoringPage = document.getElementById(
-          "individual-scoring-page"
-        ),
-        monthlySummaryPage = document.getElementById("monthly-summary-page"),
-        seatingChartPage = document.getElementById("seating-chart-page"),
-        fabContainer = document.getElementById("fab-container"),
-        loginError = document.getElementById("login-error"),
-        userInfo = document.getElementById("user-info"),
-        clearDataButton = document.getElementById("clear-data-button"),
-        finalizeWeekButton = document.getElementById("finalize-week-button"),
-        incrementNButton = document.getElementById("increment-n-button"),
-        aiFeedbackModal = document.getElementById("ai-feedback-modal"),
-        aiFeedbackContent = document.getElementById("ai-feedback-content"),
-        unassignedStudentsList = document.getElementById(
-          "unassigned-students-list"
-        );
+        const loginPage=document.getElementById('login-page'),mainPage=document.getElementById('main-page'),individualScoringPage=document.getElementById('individual-scoring-page'),monthlySummaryPage=document.getElementById('monthly-summary-page'),seatingChartPage=document.getElementById('seating-chart-page'),fabContainer=document.getElementById('fab-container'),loginError=document.getElementById('login-error'),userInfo=document.getElementById('user-info'),clearDataButton=document.getElementById('clear-data-button'),finalizeWeekButton=document.getElementById('finalize-week-button'),incrementNButton=document.getElementById('increment-n-button'),aiFeedbackModal=document.getElementById('ai-feedback-modal'),aiFeedbackContent=document.getElementById('ai-feedback-content'),unassignedStudentsList=document.getElementById('unassigned-students-list');
 
-      auth.onAuthStateChanged((user) => {
-        const allPages = [
-          mainPage,
-          individualScoringPage,
-          monthlySummaryPage,
-          seatingChartPage,
-        ];
-        if (user) {
-          const userData = predefinedUsers[user.email.toLowerCase()];
-          if (userData) {
-            currentUserRole = userData.role;
-            currentUserGroupId = userData.groupId;
-            userInfo.innerHTML = `<strong>${user.email}</strong> [${currentUserRole}]`;
-            if (currentUserRole === "ADMIN") {
-              targetGroupIdForScoring = "ALL";
-            } else if (currentUserRole === "VIEWER") {
-              targetGroupIdForScoring = null;
-            } else if (currentUserGroupId === 1) {
-              targetGroupIdForScoring = 3; // 1 chấm 3
-            } else if (currentUserGroupId === 2) {
-              targetGroupIdForScoring = 4; // 2 chấm 4
-            } else if (currentUserGroupId === 3) {
-              targetGroupIdForScoring = 1; // 3 chấm 1
-            } else if (currentUserGroupId === 4) {
-              targetGroupIdForScoring = 2; // 4 chấm 2
+        auth.onAuthStateChanged(user => {
+            const allPages = [mainPage, individualScoringPage, monthlySummaryPage, seatingChartPage];
+            if (user) {
+                const userData = predefinedUsers[user.email.toLowerCase()];
+                if(userData) {
+                    currentUserRole = userData.role;
+                    currentUserGroupId = userData.groupId;
+                    userInfo.innerHTML = `<strong>${user.email}</strong> [${currentUserRole}]`;
+                    if (currentUserRole === 'ADMIN') {
+                        targetGroupIdForScoring = 'ALL';
+                    } else if (currentUserRole === 'VIEWER') {
+                        targetGroupIdForScoring = null;
+                    } else if (currentUserGroupId === 1) {
+                        targetGroupIdForScoring = 3; // 1 chấm 3
+                    } else if (currentUserGroupId === 2) {
+                        targetGroupIdForScoring = 4; // 2 chấm 4
+                    } else if (currentUserGroupId === 3) {
+                        targetGroupIdForScoring = 1; // 3 chấm 1
+                    } else if (currentUserGroupId === 4) {
+                        targetGroupIdForScoring = 2; // 4 chấm 2
+                    }
+                }
+                const isAdmin = currentUserRole === 'ADMIN';
+                const isViewer = currentUserRole === 'VIEWER';
+
+                document.getElementById('admin-feedback-viewer').classList.toggle('hidden', !isAdmin);
+                document.getElementById('viewer-feedback-section').classList.toggle('hidden', !isViewer);
+                document.getElementById('functions-section').classList.toggle('hidden', isViewer);
+                
+                clearDataButton.classList.toggle('hidden', !isAdmin);
+                finalizeWeekButton.classList.toggle('hidden', !isAdmin);
+
+                loginPage.classList.add('hidden');
+                mainPage.classList.remove('hidden');
+                fabContainer.classList.remove('hidden');
+                
+                if (isAdmin) {
+                    listenForFeedback();
+                }
+
+                listenForDataChanges();
+                renderScoringButtons();
+            } else {
+                if (unsubscribeStudents) unsubscribeStudents();
+                if (unsubscribeScores) unsubscribeScores();
+                if (unsubscribeWeekly) unsubscribeWeekly();
+                if (unsubscribeClassInfo) unsubscribeClassInfo();
+                if (unsubscribeFeedback) unsubscribeFeedback();
+
+                currentUserRole = null;
+                currentUserGroupId = null;
+                allPages.forEach(page => page.classList.add('hidden'));
+                fabContainer.classList.add('hidden');
+                loginPage.classList.remove('hidden');
             }
-          }
-          const isAdmin = currentUserRole === "ADMIN";
-          const isViewer = currentUserRole === "VIEWER";
-
-          document
-            .getElementById("admin-feedback-viewer")
-            .classList.toggle("hidden", !isAdmin);
-          document
-            .getElementById("viewer-feedback-section")
-            .classList.toggle("hidden", !isViewer);
-          document
-            .getElementById("functions-section")
-            .classList.toggle("hidden", isViewer);
-
-          clearDataButton.classList.toggle("hidden", !isAdmin);
-          finalizeWeekButton.classList.toggle("hidden", !isAdmin);
-
-          loginPage.classList.add("hidden");
-          mainPage.classList.remove("hidden");
-          fabContainer.classList.remove("hidden");
-
-          if (isAdmin) {
-            listenForFeedback();
-          }
-
-          listenForDataChanges();
-          renderScoringButtons();
-        } else {
-          if (unsubscribeStudents) unsubscribeStudents();
-          if (unsubscribeScores) unsubscribeScores();
-          if (unsubscribeWeekly) unsubscribeWeekly();
-          if (unsubscribeClassInfo) unsubscribeClassInfo();
-          if (unsubscribeFeedback) unsubscribeFeedback();
-
-          currentUserRole = null;
-          currentUserGroupId = null;
-          allPages.forEach((page) => page.classList.add("hidden"));
-          fabContainer.classList.add("hidden");
-          loginPage.classList.remove("hidden");
+        });
+        
+        async function handleLogin() {
+            const email = document.getElementById('email').value, password = document.getElementById('password').value;
+            loginError.classList.add('hidden');
+            if (!email || !password) {
+                 loginError.textContent = "Vui lòng nhập đầy đủ thông tin.";
+                 loginError.classList.remove('hidden');
+                 return;
+            }
+            try { await auth.signInWithEmailAndPassword(email, password); }
+            catch (error) {
+                console.error("Lỗi đăng nhập:", error.code);
+                if (['auth/invalid-credential','auth/user-not-found','auth/wrong-password','auth/invalid-login-credentials'].includes(error.code)) {
+                    loginError.textContent = "Lỗi: Email hoặc mật khẩu không đúng. (Lưu ý: bạn cần tạo tài khoản trong Firebase).";
+                } else {
+                    loginError.textContent = "Đã xảy ra lỗi không xác định. Vui lòng thử lại.";
+                }
+                loginError.classList.remove('hidden');
+            }
         }
-      });
+        
+        const handleLogout = async () => { await auth.signOut(); };
 
-      async function handleLogin() {
-        const email = document.getElementById("email").value,
-          password = document.getElementById("password").value;
-        loginError.classList.add("hidden");
-        if (!email || !password) {
-          loginError.textContent = "Vui lòng nhập đầy đủ thông tin.";
-          loginError.classList.remove("hidden");
-          return;
-        }
-        try {
-          await auth.signInWithEmailAndPassword(email, password);
-        } catch (error) {
-          console.error("Lỗi đăng nhập:", error.code);
-          if (
-            [
-              "auth/invalid-credential",
-              "auth/user-not-found",
-              "auth/wrong-password",
-              "auth/invalid-login-credentials",
-            ].includes(error.code)
-          ) {
-            loginError.textContent = "Không phải tài khoản của NgTuan cấp!.";
-          } else {
-            loginError.textContent = "Lỗi này tui chịu. Thử lại xem!";
-          }
-          loginError.classList.remove("hidden");
-        }
-      }
-
-      const handleLogout = async () => {
-        await auth.signOut();
-      };
-
-      function showPage(pageToShow) {
-        [
-          mainPage,
-          individualScoringPage,
-          monthlySummaryPage,
-          seatingChartPage,
-        ].forEach((p) => p.classList.add("hidden"));
-        pageToShow.classList.remove("hidden");
-        fabContainer.classList.toggle("hidden", pageToShow !== mainPage);
-      }
-
-      const goBackToMain = () => showPage(mainPage);
-      const showMonthlySummaryPage = () => {
-        renderMonthlySummaryPage();
-        showPage(monthlySummaryPage);
-      };
-      const showSeatingChartPage = () => {
-        renderSeatingChart();
-        showPage(seatingChartPage);
-      };
-
-      function listenForDataChanges() {
-        if (unsubscribeStudents) unsubscribeStudents();
-        unsubscribeStudents = studentsDocRef().onSnapshot((doc) => {
-          students = doc.exists ? doc.data().students || [] : [];
-          renderStudentList();
-          renderLeaderboard();
-          if (!seatingChartPage.classList.contains("hidden"))
-            renderSeatingChart();
-        });
-        if (unsubscribeScores) unsubscribeScores();
-        unsubscribeScores = weeklyScoresDocRef().onSnapshot((doc) => {
-          detailedScores = doc.exists ? doc.data() || {} : {};
-          renderStudentList(); // Update scores on main page
-          renderLeaderboard();
-          if (!individualScoringPage.classList.contains("hidden"))
-            renderIndividualScoringPage();
-        });
-        if (unsubscribeWeekly) unsubscribeWeekly();
-        unsubscribeWeekly = weeklySummariesDocRef().onSnapshot((doc) => {
-          weeklySummaries = doc.exists
-            ? doc.data() || { weeks: [], totalWeeks: 0 }
-            : { weeks: [], totalWeeks: 0 };
-          if (!monthlySummaryPage.classList.contains("hidden"))
-            renderMonthlySummaryPage();
-        });
-        if (unsubscribeClassInfo) unsubscribeClassInfo();
-        unsubscribeClassInfo = classInfoDocRef().onSnapshot((doc) => {
-          classInfo = doc.exists
-            ? doc.data()
-            : {
-                subtitle:
-                  "Lớp 12A1 - Năm học 2025-2026 · Tuần ..... (Từ ngày ..../.../.... đến ngày ..../.../....)",
-              };
-          const subtitleEl = document.getElementById("scoring-page-subtitle");
-          if (subtitleEl) {
-            subtitleEl.value = classInfo.subtitle || "";
-          }
-        });
-      }
-
-      const scoreColumns = [
-        "diemtot",
-        "ghisodb",
-        "noichuyen",
-        "sudungdienthoai",
-        "gvnhacnho",
-        "xemtailieu",
-        "trangphuc",
-        "khonghocbai",
-        "phatbieu",
-        "thamgiaphongtrao",
-      ];
-      const pointValues = {
-        diemtot: 20,
-        ghisodb: -20,
-        noichuyen: -10,
-        sudungdienthoai: -50,
-        gvnhacnho: -10,
-        xemtailieu: -50,
-        trangphuc: -10,
-        khonghocbai: -20,
-        phatbieu: 10,
-        thamgiaphongtrao: 50,
-      };
-      const STARTING_SCORE = 50;
-
-      function getXepLoai(score) {
-        if (score >= 90)
-          return '<span class="font-bold text-green-400">Tốt</span>';
-        if (score >= 65)
-          return '<span class="font-bold text-blue-400">Khá</span>';
-        if (score >= 50)
-          return '<span class="font-bold text-yellow-400">Đạt</span>';
-        return '<span class="font-bold text-red-400">Chưa đạt</span>';
-      }
-
-      function renderLeaderboard() {
-        const leaderboardList = document.getElementById("leaderboard-list");
-        if (!leaderboardList) return;
-
-        const allStudentsWithScores = students.map((student) => {
-          let totalScore = STARTING_SCORE;
-          const studentScores = detailedScores[student.id] || {};
-          scoreColumns.forEach((col) => {
-            totalScore += (studentScores[col] || 0) * (pointValues[col] || 0);
-          });
-          return { ...student, totalScore };
-        });
-
-        const sortedStudents = allStudentsWithScores.sort(
-          (a, b) => b.totalScore - a.totalScore
-        );
-        const top10 = sortedStudents.slice(0, 10);
-
-        leaderboardList.innerHTML = "";
-        if (top10.length === 0) {
-          leaderboardList.innerHTML =
-            '<p class="text-center text-gray-400">Chưa có dữ liệu điểm.</p>';
-          return;
+        function showPage(pageToShow) {
+            [mainPage, individualScoringPage, monthlySummaryPage, seatingChartPage].forEach(p => p.classList.add('hidden'));
+            pageToShow.classList.remove('hidden');
+            fabContainer.classList.toggle('hidden', pageToShow !== mainPage);
         }
 
-        top10.forEach((student, index) => {
-          let medal = "";
-          if (index === 0) medal = "🥇";
-          else if (index === 1) medal = "🥈";
-          else if (index === 2) medal = "🥉";
-          else
-            medal = `<span class="font-normal text-gray-400 w-6 text-right">${
-              index + 1
-            }.</span>`;
+        const goBackToMain = () => showPage(mainPage);
+        const showMonthlySummaryPage = () => { renderMonthlySummaryPage(); showPage(monthlySummaryPage); };
+        const showSeatingChartPage = () => { renderSeatingChart(); showPage(seatingChartPage); };
+        
+        function listenForDataChanges() {
+            if (unsubscribeStudents) unsubscribeStudents();
+            unsubscribeStudents = studentsDocRef().onSnapshot(doc => {
+                students = doc.exists ? (doc.data().students || []) : [];
+                renderStudentList();
+                renderLeaderboard();
+                if(!seatingChartPage.classList.contains('hidden')) renderSeatingChart();
+            });
+            if (unsubscribeScores) unsubscribeScores();
+            unsubscribeScores = weeklyScoresDocRef().onSnapshot(doc => {
+                detailedScores = doc.exists ? (doc.data() || {}) : {};
+                renderStudentList(); // Update scores on main page
+                renderLeaderboard();
+                if(!individualScoringPage.classList.contains('hidden')) renderIndividualScoringPage();
+            });
+            if (unsubscribeWeekly) unsubscribeWeekly();
+            unsubscribeWeekly = weeklySummariesDocRef().onSnapshot(doc => {
+                 weeklySummaries = doc.exists ? (doc.data() || { weeks: [], totalWeeks: 0 }) : { weeks: [], totalWeeks: 0 };
+                 if(!monthlySummaryPage.classList.contains('hidden')) renderMonthlySummaryPage();
+            });
+            if (unsubscribeClassInfo) unsubscribeClassInfo();
+            unsubscribeClassInfo = classInfoDocRef().onSnapshot(doc => {
+                classInfo = doc.exists ? doc.data() : { subtitle: 'Lớp 12A1 - Năm học 2025-2026 · Tuần ..... (Từ ngày ..../.../.... đến ngày ..../.../....)' };
+                const subtitleEl = document.getElementById('scoring-page-subtitle');
+                if (subtitleEl) {
+                    subtitleEl.value = classInfo.subtitle || '';
+                }
+            });
+        }
+        
+        const scoreColumns = ['diemtot', 'ghisodb', 'noichuyen', 'sudungdienthoai', 'gvnhacnho', 'xemtailieu', 'trangphuc', 'khonghocbai', 'phatbieu', 'thamgiaphongtrao'];
+        const pointValues = { diemtot: 20, ghisodb: -20, noichuyen: -10, sudungdienthoai: -50, gvnhacnho: -10, xemtailieu: -50, trangphuc: -10, khonghocbai: -20, phatbieu: 10, thamgiaphongtrao: 50 };
+        const STARTING_SCORE = 50;
+        
+        function getXepLoai(score) {
+            if (score >= 90) return '<span class="font-bold text-green-400">Tốt</span>';
+            if (score >= 65) return '<span class="font-bold text-blue-400">Khá</span>';
+            if (score >= 50) return '<span class="font-bold text-yellow-400">Đạt</span>';
+            return '<span class="font-bold text-red-400">Chưa đạt</span>';
+        }
 
-          const studentElement = document.createElement("div");
-          studentElement.className =
-            "flex items-center justify-between p-2 rounded-md bg-gray-900 bg-opacity-50";
-          studentElement.innerHTML = `
+        function renderLeaderboard() {
+            const leaderboardList = document.getElementById('leaderboard-list');
+            if (!leaderboardList) return;
+
+            const allStudentsWithScores = students.map(student => {
+                let totalScore = STARTING_SCORE;
+                const studentScores = detailedScores[student.id] || {};
+                scoreColumns.forEach(col => {
+                    totalScore += (studentScores[col] || 0) * (pointValues[col] || 0);
+                });
+                return { ...student, totalScore };
+            });
+
+            const sortedStudents = allStudentsWithScores.sort((a, b) => b.totalScore - a.totalScore);
+            const top10 = sortedStudents.slice(0, 10);
+
+            leaderboardList.innerHTML = '';
+            if (top10.length === 0) {
+                leaderboardList.innerHTML = '<p class="text-center text-gray-400">Chưa có dữ liệu điểm.</p>';
+                return;
+            }
+
+            top10.forEach((student, index) => {
+                let medal = '';
+                if (index === 0) medal = '🥇';
+                else if (index === 1) medal = '🥈';
+                else if (index === 2) medal = '🥉';
+                else medal = `<span class="font-normal text-gray-400 w-6 text-right">${index + 1}.</span>`;
+
+                const studentElement = document.createElement('div');
+                studentElement.className = 'flex items-center justify-between p-2 rounded-md bg-gray-900 bg-opacity-50';
+                studentElement.innerHTML = `
                     <div class="flex items-center gap-3">
                         <span class="text-lg font-bold w-6 text-center">${medal}</span>
                         <div>
@@ -1260,604 +747,499 @@
                     </div>
                     <span class="font-bold text-lg text-yellow-400">${student.totalScore}</span>
                 `;
-          leaderboardList.appendChild(studentElement);
-        });
-      }
-
-      function renderStudentList() {
-        for (let i = 1; i <= 4; i++) {
-          const groupZone = document.getElementById(`group-${i}`);
-          if (!groupZone) continue;
-          groupZone.innerHTML = "";
-          students
-            .filter((s) => s.group === i)
-            .forEach((student) => {
-              const studentCard = document.createElement("div");
-              studentCard.id = student.id;
-              studentCard.className = "student-card text-center";
-
-              let totalScore = STARTING_SCORE;
-              const studentScores = detailedScores[student.id] || {};
-              scoreColumns.forEach((col) => {
-                totalScore +=
-                  (studentScores[col] || 0) * (pointValues[col] || 0);
-              });
-
-              studentCard.innerHTML = `<div class="student-id">${student.id}</div><div class="student-name text-xs truncate">${student.name}</div><div class="student-score">${totalScore}</div>`;
-              groupZone.appendChild(studentCard);
+                leaderboardList.appendChild(studentElement);
             });
         }
-      }
 
-      function renderScoringButtons() {
-        for (let i = 1; i <= 4; i++) {
-          const btn = document.getElementById(`score-group-${i}-btn`);
-          if (!btn) continue;
-          let canScore = false;
-          if (targetGroupIdForScoring === "ALL") canScore = true;
-          if (targetGroupIdForScoring === i) canScore = true;
-          btn.classList.toggle("hidden", !canScore);
+        function renderStudentList() {
+            for (let i = 1; i <= 4; i++) {
+                const groupZone = document.getElementById(`group-${i}`);
+                if (!groupZone) continue;
+                groupZone.innerHTML = '';
+                students.filter(s => s.group === i).forEach(student => {
+                    const studentCard = document.createElement('div');
+                    studentCard.id = student.id;
+                    studentCard.className = 'student-card text-center';
+
+                    let totalScore = STARTING_SCORE;
+                    const studentScores = detailedScores[student.id] || {};
+                    scoreColumns.forEach(col => {
+                        totalScore += (studentScores[col] || 0) * (pointValues[col] || 0);
+                    });
+
+                    studentCard.innerHTML = `<div class="student-id">${student.id}</div><div class="student-name text-xs truncate">${student.name}</div><div class="student-score">${totalScore}</div>`;
+                    groupZone.appendChild(studentCard);
+                });
+            }
         }
-      }
 
-      function goToScoringPage(groupId) {
-        currentScoringGroupId = groupId;
-        const titleEl = document.getElementById("scoring-page-title");
-        const subtitleInput = document.getElementById("scoring-page-subtitle");
-        if (titleEl) titleEl.textContent = `SỔ THEO DÕI THI ĐUA TỔ ${groupId}`;
-
-        if (subtitleInput) {
-          subtitleInput.disabled = currentUserRole !== "ADMIN";
+        function renderScoringButtons() {
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`score-group-${i}-btn`);
+                 if(!btn) continue;
+                let canScore = false;
+                if (targetGroupIdForScoring === 'ALL') canScore = true;
+                if (targetGroupIdForScoring === i) canScore = true;
+                btn.classList.toggle('hidden', !canScore);
+            }
+        }
+        
+        function goToScoringPage(groupId) {
+            currentScoringGroupId = groupId;
+            const titleEl = document.getElementById('scoring-page-title');
+            const subtitleInput = document.getElementById('scoring-page-subtitle');
+            if(titleEl) titleEl.textContent = `SỔ THEO DÕI THI ĐUA TỔ ${groupId}`;
+            
+            if(subtitleInput) {
+                subtitleInput.disabled = currentUserRole !== 'ADMIN';
+            }
+            
+            renderIndividualScoringPage();
+            showPage(individualScoringPage);
         }
 
-        renderIndividualScoringPage();
-        showPage(individualScoringPage);
-      }
+        function renderIndividualScoringPage() {
+            const tbody = document.getElementById('individual-scoring-tbody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            const isViewer = currentUserRole === 'VIEWER';
+            students.filter(s => s.group === currentScoringGroupId).forEach((student, index) => {
+                const row = document.createElement('tr');
+                let rowHTML = `<td>${index + 1}</td><td class="text-left font-semibold">${student.name}</td>`;
+                
+                let totalScore = STARTING_SCORE;
+                const studentScores = detailedScores[student.id] || {};
 
-      function renderIndividualScoringPage() {
-        const tbody = document.getElementById("individual-scoring-tbody");
-        if (!tbody) return;
-        tbody.innerHTML = "";
-        const isViewer = currentUserRole === "VIEWER";
-        students
-          .filter((s) => s.group === currentScoringGroupId)
-          .forEach((student, index) => {
-            const row = document.createElement("tr");
-            let rowHTML = `<td>${
-              index + 1
-            }</td><td class="text-left font-semibold">${student.name}</td>`;
+                scoreColumns.forEach(col => {
+                    const value = studentScores[col] || '';
+                    rowHTML += `<td><input type="number" class="table-input" value="${value}" oninput="handleIndividualScoreChange(this, '${student.id}', '${col}')" min="0" ${isViewer ? 'disabled' : ''}></td>`;
+                    if(value) totalScore += Number(value) * (pointValues[col] || 0);
+                });
+
+                rowHTML += `<td id="total-score-${student.id}" class="font-bold">${totalScore}</td>`;
+                rowHTML += `<td id="xeploai-${student.id}">${getXepLoai(totalScore)}</td>`;
+
+                row.innerHTML = rowHTML;
+                tbody.appendChild(row);
+            });
+            calculateColumnTotals();
+        }
+        
+        async function handleSubtitleChange(input) {
+            if (currentUserRole !== 'ADMIN') return;
+            const newSubtitle = input.value;
+            await classInfoDocRef().set({ subtitle: newSubtitle }, { merge: true });
+        }
+
+        async function handleIndividualScoreChange(input, studentId, column) {
+            const value = Number(input.value);
+            if (!detailedScores[studentId]) detailedScores[studentId] = {};
+            
+            if (value > 0) {
+                detailedScores[studentId][column] = value;
+            } else {
+                delete detailedScores[studentId][column];
+            }
 
             let totalScore = STARTING_SCORE;
-            const studentScores = detailedScores[student.id] || {};
+            scoreColumns.forEach(col => { totalScore += (detailedScores[studentId][col] || 0) * (pointValues[col] || 0); });
+            
+            document.getElementById(`total-score-${studentId}`).textContent = totalScore;
+            document.getElementById(`xeploai-${studentId}`).innerHTML = getXepLoai(totalScore);
+            
+            calculateColumnTotals();
+            
+            await weeklyScoresDocRef().set(detailedScores, {merge: true});
+        }
+        
+        function calculateColumnTotals() {
+            let finalTotal = 0;
+            const groupStudents = students.filter(s => s.group === currentScoringGroupId);
 
-            scoreColumns.forEach((col) => {
-              const value = studentScores[col] || "";
-              rowHTML += `<td><input type="number" class="table-input" value="${value}" oninput="handleIndividualScoreChange(this, '${
-                student.id
-              }', '${col}')" min="0" ${isViewer ? "disabled" : ""}></td>`;
-              if (value) totalScore += Number(value) * (pointValues[col] || 0);
+            scoreColumns.forEach(col => {
+                let colTotal = 0;
+                groupStudents.forEach(student => colTotal += (detailedScores[student.id]?.[col] || 0));
+                const totalColEl = document.getElementById(`total-col-${col}`);
+                if(totalColEl) totalColEl.textContent = colTotal;
             });
 
-            rowHTML += `<td id="total-score-${student.id}" class="font-bold">${totalScore}</td>`;
-            rowHTML += `<td id="xeploai-${student.id}">${getXepLoai(
-              totalScore
-            )}</td>`;
+            groupStudents.forEach(student => {
+                let studentTotal = STARTING_SCORE;
+                const studentScores = detailedScores[student.id] || {};
+                scoreColumns.forEach(col => {
+                    studentTotal += (studentScores[col] || 0) * (pointValues[col] || 0);
+                });
+                finalTotal += studentTotal;
+            });
 
-            row.innerHTML = rowHTML;
-            tbody.appendChild(row);
-          });
-        calculateColumnTotals();
-      }
-
-      async function handleSubtitleChange(input) {
-        if (currentUserRole !== "ADMIN") return;
-        const newSubtitle = input.value;
-        await classInfoDocRef().set({ subtitle: newSubtitle }, { merge: true });
-      }
-
-      async function handleIndividualScoreChange(input, studentId, column) {
-        const value = Number(input.value);
-        if (!detailedScores[studentId]) detailedScores[studentId] = {};
-
-        if (value > 0) {
-          detailedScores[studentId][column] = value;
-        } else {
-          delete detailedScores[studentId][column];
+            const finalTotalEl = document.getElementById('total-final');
+            if(finalTotalEl) finalTotalEl.textContent = finalTotal;
         }
 
-        let totalScore = STARTING_SCORE;
-        scoreColumns.forEach((col) => {
-          totalScore +=
-            (detailedScores[studentId][col] || 0) * (pointValues[col] || 0);
-        });
+        function renderMonthlySummaryPage() {
+            const header = document.getElementById('weekly-summary-header');
+            const body = document.getElementById('weekly-summary-body');
+            if(!header || !body) return;
+            header.innerHTML = ''; body.innerHTML = '';
+            if (!weeklySummaries.weeks || weeklySummaries.weeks.length === 0) {
+                 body.innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 p-4">Chưa có dữ liệu.</td></tr>';
+                 return;
+            }
+            let headerHTML = '<tr><th>Tuần</th>';
+            for (let i = 1; i <= 4; i++) {
+                headerHTML += `<th>Tổ ${i}</th>`;
+            }
+            header.innerHTML = headerHTML + '</tr>';
 
-        document.getElementById(`total-score-${studentId}`).textContent =
-          totalScore;
-        document.getElementById(`xeploai-${studentId}`).innerHTML =
-          getXepLoai(totalScore);
-
-        calculateColumnTotals();
-
-        await weeklyScoresDocRef().set(detailedScores, { merge: true });
-      }
-
-      function calculateColumnTotals() {
-        let finalTotal = 0;
-        const groupStudents = students.filter(
-          (s) => s.group === currentScoringGroupId
-        );
-
-        scoreColumns.forEach((col) => {
-          let colTotal = 0;
-          groupStudents.forEach(
-            (student) => (colTotal += detailedScores[student.id]?.[col] || 0)
-          );
-          const totalColEl = document.getElementById(`total-col-${col}`);
-          if (totalColEl) totalColEl.textContent = colTotal;
-        });
-
-        groupStudents.forEach((student) => {
-          let studentTotal = STARTING_SCORE;
-          const studentScores = detailedScores[student.id] || {};
-          scoreColumns.forEach((col) => {
-            studentTotal += (studentScores[col] || 0) * (pointValues[col] || 0);
-          });
-          finalTotal += studentTotal;
-        });
-
-        const finalTotalEl = document.getElementById("total-final");
-        if (finalTotalEl) finalTotalEl.textContent = finalTotal;
-      }
-
-      function renderMonthlySummaryPage() {
-        const header = document.getElementById("weekly-summary-header");
-        const body = document.getElementById("weekly-summary-body");
-        if (!header || !body) return;
-        header.innerHTML = "";
-        body.innerHTML = "";
-        if (!weeklySummaries.weeks || weeklySummaries.weeks.length === 0) {
-          body.innerHTML =
-            '<tr><td colspan="5" class="text-center text-gray-400 p-4">Chưa có dữ liệu.</td></tr>';
-          return;
+            weeklySummaries.weeks.forEach(week => {
+                const row = document.createElement('tr');
+                let rowHTML = `<td class="font-bold">Tuần ${week.weekNumber}</td>`;
+                for (let i = 1; i <= 4; i++) {
+                    rowHTML += `<td>${week.scores[i]||0}</td>`;
+                }
+                row.innerHTML = rowHTML;
+                body.appendChild(row);
+            });
+            document.getElementById('total-weeks-display').textContent = weeklySummaries.totalWeeks || 0;
+            incrementNButton.classList.toggle('hidden', currentUserRole !== 'ADMIN');
         }
-        let headerHTML = "<tr><th>Tuần</th>";
-        for (let i = 1; i <= 4; i++) {
-          headerHTML += `<th>Tổ ${i}</th>`;
+        
+        const openClearDataModal = () => document.getElementById('clear-data-modal').classList.remove('hidden');
+        const closeClearDataModal = () => document.getElementById('clear-data-modal').classList.add('hidden');
+        async function clearAllData() {
+            if(confirm("Xác nhận lần cuối: Xóa TOÀN BỘ DỮ LIỆU? Hành động này không thể hoàn tác.")){
+                await studentsDocRef().set({ students: [] });
+                await weeklyScoresDocRef().set({});
+                await weeklySummariesDocRef().set({ weeks: [], totalWeeks: 0 });
+                alert("Đã xóa sạch dữ liệu.");
+                closeClearDataModal();
+            }
         }
-        header.innerHTML = headerHTML + "</tr>";
-
-        weeklySummaries.weeks.forEach((week) => {
-          const row = document.createElement("tr");
-          let rowHTML = `<td class="font-bold">Tuần ${week.weekNumber}</td>`;
-          for (let i = 1; i <= 4; i++) {
-            rowHTML += `<td>${week.scores[i] || 0}</td>`;
-          }
-          row.innerHTML = rowHTML;
-          body.appendChild(row);
-        });
-        document.getElementById("total-weeks-display").textContent =
-          weeklySummaries.totalWeeks || 0;
-        incrementNButton.classList.toggle(
-          "hidden",
-          currentUserRole !== "ADMIN"
-        );
-      }
-
-      const openClearDataModal = () =>
-        document.getElementById("clear-data-modal").classList.remove("hidden");
-      const closeClearDataModal = () =>
-        document.getElementById("clear-data-modal").classList.add("hidden");
-      async function clearAllData() {
-        if (
-          confirm(
-            "Xác nhận lần cuối: Xóa TOÀN BỘ DỮ LIỆU? Hành động này không thể hoàn tác."
-          )
-        ) {
-          await studentsDocRef().set({ students: [] });
-          await weeklyScoresDocRef().set({});
-          await weeklySummariesDocRef().set({ weeks: [], totalWeeks: 0 });
-          alert("Đã xóa sạch dữ liệu.");
-          closeClearDataModal();
-        }
-      }
-
-      const openFinalizeWeekModal = () => {
-        const summaryDiv = document.getElementById("finalize-week-summary");
-        summaryDiv.innerHTML =
-          '<p class="font-bold mb-2">Điểm tổng kết tuần:</p>';
-        let groupScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
-        for (let i = 1; i <= 4; i++) {
-          let groupTotal = 0;
-          const groupStudents = students.filter((s) => s.group === i);
-          groupStudents.forEach((student) => {
-            let studentTotal = STARTING_SCORE;
-            scoreColumns.forEach(
-              (col) =>
-                (studentTotal +=
-                  (detailedScores[student.id]?.[col] || 0) *
-                  (pointValues[col] || 0))
-            );
-            groupTotal += studentTotal;
-          });
-          groupScores[i] = groupTotal;
-          summaryDiv.innerHTML += `<p><strong>Tổ ${i}:</strong> ${groupScores[i]} điểm</p>`;
-        }
-        document
-          .getElementById("finalize-week-modal")
-          .classList.remove("hidden");
-      };
-      const closeFinalizeWeekModal = () =>
-        document.getElementById("finalize-week-modal").classList.add("hidden");
-
-      async function confirmFinalizeWeek(shouldReset) {
-        let groupScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
-        for (let i = 1; i <= 4; i++) {
-          let groupTotal = 0;
-          const groupStudents = students.filter((s) => s.group === i);
-          groupStudents.forEach((student) => {
-            let studentTotal = STARTING_SCORE;
-            scoreColumns.forEach(
-              (col) =>
-                (studentTotal +=
-                  (detailedScores[student.id]?.[col] || 0) *
-                  (pointValues[col] || 0))
-            );
-            groupTotal += studentTotal;
-          });
-          groupScores[i] = groupTotal;
-        }
-        const newWeekData = {
-          weekNumber: (weeklySummaries.weeks?.length || 0) + 1,
-          timestamp: new Date().toISOString(),
-          scores: groupScores,
+        
+        const openFinalizeWeekModal = () => {
+            const summaryDiv = document.getElementById('finalize-week-summary');
+            summaryDiv.innerHTML = '<p class="font-bold mb-2">Điểm tổng kết tuần:</p>';
+            let groupScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            for(let i=1; i<=4; i++){
+                let groupTotal = 0;
+                const groupStudents = students.filter(s => s.group === i);
+                groupStudents.forEach(student => {
+                    let studentTotal = STARTING_SCORE;
+                    scoreColumns.forEach(col => studentTotal += (detailedScores[student.id]?.[col] || 0) * (pointValues[col] || 0));
+                    groupTotal += studentTotal;
+                });
+                groupScores[i] = groupTotal;
+                summaryDiv.innerHTML += `<p><strong>Tổ ${i}:</strong> ${groupScores[i]} điểm</p>`;
+            }
+            document.getElementById('finalize-week-modal').classList.remove('hidden');
         };
-        const updatedWeeks = [...(weeklySummaries.weeks || []), newWeekData];
-        await weeklySummariesDocRef().set(
-          { ...weeklySummaries, weeks: updatedWeeks },
-          { merge: true }
-        );
+        const closeFinalizeWeekModal = () => document.getElementById('finalize-week-modal').classList.add('hidden');
 
-        if (shouldReset) {
-          await weeklyScoresDocRef().set({});
-          alert("Đã lưu và reset điểm.");
-        } else {
-          alert("Đã lưu điểm tuần.");
+        async function confirmFinalizeWeek(shouldReset) {
+            let groupScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            const individualStudentScores = {};
+
+            for(let i=1; i<=4; i++){
+                let groupTotal = 0;
+                const groupStudents = students.filter(s => s.group === i);
+                groupStudents.forEach(student => {
+                    let studentTotal = STARTING_SCORE;
+                    scoreColumns.forEach(col => studentTotal += (detailedScores[student.id]?.[col] || 0) * (pointValues[col] || 0));
+                    individualStudentScores[student.id] = studentTotal;
+                    groupTotal += studentTotal;
+                });
+                groupScores[i] = groupTotal;
+            }
+
+            const newWeekData = { 
+                weekNumber: (weeklySummaries.weeks?.length || 0) + 1, 
+                timestamp: new Date().toISOString(), 
+                scores: groupScores,
+                studentScores: individualStudentScores 
+            };
+            
+            const updatedWeeks = [...(weeklySummaries.weeks || []), newWeekData];
+            await weeklySummariesDocRef().set({ ...weeklySummaries, weeks: updatedWeeks }, { merge: true });
+            
+            if(shouldReset) {
+                await weeklyScoresDocRef().set({});
+                alert("Đã lưu điểm tuần (bao gồm điểm cá nhân) và reset điểm cho tuần mới.");
+            } else {
+                alert("Đã lưu điểm tuần (bao gồm điểm cá nhân).");
+            }
+            closeFinalizeWeekModal();
         }
-        closeFinalizeWeekModal();
-      }
 
-      async function incrementN() {
-        const newN = (weeklySummaries.totalWeeks || 0) + 1;
-        await weeklySummariesDocRef().set(
-          { totalWeeks: newN },
-          { merge: true }
-        );
-      }
-
-      function calculateYearlySummary() {
-        const resultsDiv = document.getElementById("yearly-summary-results");
-        resultsDiv.innerHTML = "";
-        const n = weeklySummaries.totalWeeks || 0;
-        if (n === 0) {
-          resultsDiv.innerHTML =
-            '<p class="text-center text-red-400">Vui lòng thiết lập số tuần học (n).</p>';
-          return;
+        async function incrementN() {
+            const newN = (weeklySummaries.totalWeeks || 0) + 1;
+            await weeklySummariesDocRef().set({ totalWeeks: newN }, { merge: true });
         }
-        if (!weeklySummaries.weeks || weeklySummaries.weeks.length === 0) {
-          resultsDiv.innerHTML =
-            '<p class="text-center text-red-400">Không có dữ liệu tuần.</p>';
-          return;
-        }
-        let yearlyScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
-        weeklySummaries.weeks.forEach((week) => {
-          for (let i = 1; i <= 4; i++) yearlyScores[i] += week.scores[i] || 0;
-        });
-        const sortedYearly = Object.entries(yearlyScores).sort(
-          (a, b) => b[1] - a[1]
-        );
-        const threshold = 1000 * n; // This threshold might need adjustment based on the new scoring system
-        let resultHTML = `<h4 class="font-bold text-center">Kết quả xếp hạng năm:</h4>`;
-        sortedYearly.forEach(([groupId, score], index) => {
-          const isBelow =
-            score <
-            groupStudents.length *
-              STARTING_SCORE *
-              weeklySummaries.weeks.length; // A more dynamic threshold could be considered
-          resultHTML += `<div class="p-4 border rounded-lg ${
-            isBelow
-              ? "bg-red-900 bg-opacity-30 border-red-500"
-              : "bg-green-900 bg-opacity-30 border-green-500"
-          }"><div class="flex justify-between items-center"><span class="font-bold text-lg">${
-            index + 1
-          }. Tổ ${groupId}</span><span class="font-bold text-xl ${
-            isBelow ? "text-red-400" : "text-green-400"
-          }">${score} điểm</span></div></div>`;
-        });
-        resultsDiv.innerHTML = resultHTML;
-      }
-
-      const openAIFeedbackModal = () =>
-        document.getElementById("ai-feedback-modal").classList.remove("hidden");
-      const closeAIFeedbackModal = () =>
-        document.getElementById("ai-feedback-modal").classList.add("hidden");
-      async function getAIFeedback() {
-        openAIFeedbackModal();
-        aiFeedbackContent.innerHTML =
-          '<div class="spinner mx-auto"></div><p class="mt-2 text-gray-400">AI đang phân tích...</p>';
-        let groupScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
-        for (let i = 1; i <= 4; i++) {
-          let groupTotal = 0;
-          students
-            .filter((s) => s.group === i)
-            .forEach((student) => {
-              let studentTotal = STARTING_SCORE;
-              scoreColumns.forEach(
-                (col) =>
-                  (studentTotal +=
-                    (detailedScores[student.id]?.[col] || 0) *
-                    (pointValues[col] || 0))
-              );
-              groupTotal += studentTotal;
+        
+        function calculateYearlySummary() {
+            const resultsDiv = document.getElementById('yearly-summary-results');
+            resultsDiv.innerHTML = '';
+            const n = weeklySummaries.totalWeeks || 0;
+            if(n === 0) {
+                 resultsDiv.innerHTML = '<p class="text-center text-red-400">Vui lòng thiết lập số tuần học (n).</p>';
+                 return;
+            }
+            if (!weeklySummaries.weeks || weeklySummaries.weeks.length === 0) {
+                resultsDiv.innerHTML = '<p class="text-center text-red-400">Không có dữ liệu tuần.</p>';
+                return;
+            }
+            let yearlyScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            weeklySummaries.weeks.forEach(week => {
+                for (let i = 1; i <= 4; i++) yearlyScores[i] += week.scores[i] || 0;
             });
-          groupScores[i] = groupTotal;
-        }
-        const scoresText = `Tổ 1: ${groupScores[1]}, Tổ 2: ${groupScores[2]}, Tổ 3: ${groupScores[3]}, Tổ 4: ${groupScores[4]}.`;
-        const systemPrompt =
-          "Bạn là một cố vấn học tập vui vẻ, tích cực. Hãy nhận xét ngắn gọn (3-5 câu) về kết quả thi đua. Giữ giọng văn khích lệ, tập trung vào sự cố gắng. Trả lời bằng tiếng Việt.";
-        const userQuery = `Điểm thi đua tuần này: ${scoresText}. Viết nhận xét ngắn gọn, tích cực, chúc mừng tổ cao nhất và động viên các tổ khác.`;
-        const apiKey = "";
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-        try {
-          const response = await fetch(apiUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: userQuery }] }],
-              systemInstruction: { parts: [{ text: systemPrompt }] },
-            }),
-          });
-          if (!response.ok)
-            throw new Error(`API call failed: ${response.status}`);
-          const result = await response.json();
-          const feedbackText =
-            result.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (feedbackText)
-            aiFeedbackContent.innerHTML = `<p class="text-gray-300 text-left whitespace-pre-wrap">${feedbackText}</p>`;
-          else throw new Error("No content from AI.");
-        } catch (error) {
-          console.error("Gemini API Error:", error);
-          aiFeedbackContent.innerHTML = `<p class="text-red-400">Lỗi khi tạo nhận xét. Vui lòng thử lại.</p>`;
-        }
-      }
-
-      async function sendFeedback() {
-        const nameInput = document.getElementById("feedback-name");
-        const contentTextarea = document.getElementById("feedback-content");
-        const statusEl = document.getElementById("feedback-status");
-
-        const name = nameInput.value.trim();
-        const message = contentTextarea.value.trim();
-
-        if (!name || !message) {
-          alert("Vui lòng nhập đầy đủ Họ và Tên và Nội dung phản hồi.");
-          return;
+            const sortedYearly = Object.entries(yearlyScores).sort((a, b) => b[1] - a[1]);
+            const threshold = 1000 * n; // This threshold might need adjustment based on the new scoring system
+            let resultHTML = `<h4 class="font-bold text-center">Kết quả xếp hạng năm:</h4>`;
+            sortedYearly.forEach(([groupId, score], index) => {
+                const isBelow = score < (groupStudents.length * STARTING_SCORE * weeklySummaries.weeks.length); // A more dynamic threshold could be considered
+                resultHTML += `<div class="p-4 border rounded-lg ${isBelow ? 'bg-red-900 bg-opacity-30 border-red-500':'bg-green-900 bg-opacity-30 border-green-500'}"><div class="flex justify-between items-center"><span class="font-bold text-lg">${index+1}. Tổ ${groupId}</span><span class="font-bold text-xl ${isBelow ? 'text-red-400':'text-green-400'}">${score} điểm</span></div></div>`;
+            });
+            resultsDiv.innerHTML = resultHTML;
         }
 
-        try {
-          await feedbackCollectionRef().add({
-            name: name,
-            message: message,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            isRead: false,
-          });
-          nameInput.value = "";
-          contentTextarea.value = "";
-          statusEl.textContent = "Gửi phản hồi thành công!";
-          statusEl.classList.remove("hidden");
-          setTimeout(() => statusEl.classList.add("hidden"), 3000);
-        } catch (error) {
-          console.error("Error sending feedback: ", error);
-          statusEl.textContent = "Lỗi! Không thể gửi phản hồi.";
-          statusEl.classList.remove("hidden", "text-green-400");
-          statusEl.classList.add("text-red-400");
-          setTimeout(() => {
-            statusEl.classList.add("hidden");
-            statusEl.classList.remove("text-red-400");
-            statusEl.classList.add("text-green-400");
-          }, 3000);
+        const openAIFeedbackModal = () => document.getElementById('ai-feedback-modal').classList.remove('hidden');
+        const closeAIFeedbackModal = () => document.getElementById('ai-feedback-modal').classList.add('hidden');
+        async function getAIFeedback() {
+            openAIFeedbackModal();
+            aiFeedbackContent.innerHTML = '<div class="spinner mx-auto"></div><p class="mt-2 text-gray-400">AI đang phân tích...</p>';
+            let groupScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            for(let i=1; i<=4; i++){
+                let groupTotal = 0;
+                students.filter(s => s.group === i).forEach(student => {
+                    let studentTotal = STARTING_SCORE;
+                    scoreColumns.forEach(col => studentTotal += (detailedScores[student.id]?.[col] || 0) * (pointValues[col] || 0));
+                    groupTotal += studentTotal;
+                });
+                groupScores[i] = groupTotal;
+            }
+            const scoresText = `Tổ 1: ${groupScores[1]}, Tổ 2: ${groupScores[2]}, Tổ 3: ${groupScores[3]}, Tổ 4: ${groupScores[4]}.`;
+            const systemPrompt = "Bạn là một cố vấn học tập vui vẻ, tích cực. Hãy nhận xét ngắn gọn (3-5 câu) về kết quả thi đua. Giữ giọng văn khích lệ, tập trung vào sự cố gắng. Trả lời bằng tiếng Việt.";
+            const userQuery = `Điểm thi đua tuần này: ${scoresText}. Viết nhận xét ngắn gọn, tích cực, chúc mừng tổ cao nhất và động viên các tổ khác.`;
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] }, }) });
+                if (!response.ok) throw new Error(`API call failed: ${response.status}`);
+                const result = await response.json();
+                const feedbackText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (feedbackText) aiFeedbackContent.innerHTML = `<p class="text-gray-300 text-left whitespace-pre-wrap">${feedbackText}</p>`;
+                else throw new Error("No content from AI.");
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                aiFeedbackContent.innerHTML = `<p class="text-red-400">Lỗi khi tạo nhận xét. Vui lòng thử lại.</p>`;
+            }
         }
-      }
+        
+        async function sendFeedback() {
+            const nameInput = document.getElementById('feedback-name');
+            const contentTextarea = document.getElementById('feedback-content');
+            const statusEl = document.getElementById('feedback-status');
+            
+            const name = nameInput.value.trim();
+            const message = contentTextarea.value.trim();
 
-      function listenForFeedback() {
-        if (unsubscribeFeedback) unsubscribeFeedback();
-        unsubscribeFeedback = feedbackCollectionRef()
-          .orderBy("timestamp", "desc")
-          .onSnapshot((snapshot) => {
-            const feedbackItems = snapshot.docs.map((doc) => ({
-              id: doc.id,
-              ...doc.data(),
-            }));
-            renderFeedback(feedbackItems);
-          });
-      }
+            if (!name || !message) {
+                alert("Vui lòng nhập đầy đủ Họ và Tên và Nội dung phản hồi.");
+                return;
+            }
 
-      function renderFeedback(feedbackItems) {
-        const listEl = document.getElementById("feedback-list");
-        if (!listEl) return;
-        listEl.innerHTML = "";
-
-        if (feedbackItems.length === 0) {
-          listEl.innerHTML =
-            '<p class="text-center text-gray-400 text-sm">Không có phản hồi nào.</p>';
-          return;
+            try {
+                await feedbackCollectionRef().add({
+                    name: name,
+                    message: message,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    isRead: false
+                });
+                nameInput.value = '';
+                contentTextarea.value = '';
+                statusEl.textContent = 'Gửi phản hồi thành công!';
+                statusEl.classList.remove('hidden');
+                setTimeout(() => statusEl.classList.add('hidden'), 3000);
+            } catch (error) {
+                console.error("Error sending feedback: ", error);
+                statusEl.textContent = 'Lỗi! Không thể gửi phản hồi.';
+                statusEl.classList.remove('hidden', 'text-green-400');
+                statusEl.classList.add('text-red-400');
+                setTimeout(() => {
+                    statusEl.classList.add('hidden');
+                    statusEl.classList.remove('text-red-400');
+                    statusEl.classList.add('text-green-400');
+                }, 3000);
+            }
         }
 
-        feedbackItems.forEach((item) => {
-          const itemEl = document.createElement("div");
-          itemEl.className = `feedback-item ${!item.isRead ? "unread" : ""}`;
 
-          const date = item.timestamp
-            ? item.timestamp.toDate().toLocaleString("vi-VN")
-            : "Đang gửi...";
+        function listenForFeedback() {
+            if (unsubscribeFeedback) unsubscribeFeedback();
+            unsubscribeFeedback = feedbackCollectionRef().orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                const feedbackItems = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderFeedback(feedbackItems);
+            });
+        }
 
-          itemEl.innerHTML = `
+        function renderFeedback(feedbackItems) {
+            const listEl = document.getElementById('feedback-list');
+            if (!listEl) return;
+            listEl.innerHTML = '';
+
+            if (feedbackItems.length === 0) {
+                listEl.innerHTML = '<p class="text-center text-gray-400 text-sm">Không có phản hồi nào.</p>';
+                return;
+            }
+
+            feedbackItems.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = `feedback-item ${!item.isRead ? 'unread' : ''}`;
+                
+                const date = item.timestamp ? item.timestamp.toDate().toLocaleString('vi-VN') : 'Đang gửi...';
+
+                itemEl.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div>
-                            <p class="feedback-meta">Từ: <strong class="text-purple-300">${
-                              item.name || "Không rõ"
-                            }</strong></p>
+                            <p class="feedback-meta">Từ: <strong class="text-purple-300">${item.name || 'Không rõ'}</strong></p>
                             <p class="feedback-meta">Lúc: ${date}</p>
                         </div>
-                        <span class="delete-feedback-btn" onclick="deleteFeedback(event, '${
-                          item.id
-                        }')" title="Xóa phản hồi">&times;</span>
+                        <span class="delete-feedback-btn" onclick="deleteFeedback(event, '${item.id}')" title="Xóa phản hồi">&times;</span>
                     </div>
                     <p class="feedback-content">${item.message}</p>
                 `;
-          if (!item.isRead) {
-            itemEl.style.cursor = "pointer";
-            itemEl.setAttribute("onclick", `markFeedbackAsRead('${item.id}')`);
-          }
-          listEl.appendChild(itemEl);
-        });
-      }
-
-      async function markFeedbackAsRead(id) {
-        try {
-          await feedbackCollectionRef().doc(id).update({ isRead: true });
-        } catch (error) {
-          console.error("Error marking feedback as read: ", error);
+                if (!item.isRead) {
+                    itemEl.style.cursor = 'pointer';
+                    itemEl.setAttribute('onclick', `markFeedbackAsRead('${item.id}')`);
+                }
+                listEl.appendChild(itemEl);
+            });
         }
-      }
 
-      async function deleteFeedback(event, id) {
-        event.stopPropagation();
-        if (confirm("Bạn có chắc chắn muốn xóa phản hồi này không?")) {
-          try {
-            await feedbackCollectionRef().doc(id).delete();
-          } catch (error) {
-            console.error("Error deleting feedback: ", error);
-          }
+        async function markFeedbackAsRead(id) {
+            try {
+                await feedbackCollectionRef().doc(id).update({ isRead: true });
+            } catch (error) {
+                console.error("Error marking feedback as read: ", error);
+            }
         }
-      }
 
-      function initializeSeatingChart() {
-        const leftBlock = document.getElementById("left-desk-block");
-        const rightBlock = document.getElementById("right-desk-block");
-        if (!leftBlock || !rightBlock) return;
-        leftBlock.innerHTML = "";
-        rightBlock.innerHTML = "";
-        for (let i = 1; i <= 6; i++) {
-          leftBlock.innerHTML += `<div class="desk"><div class="seat" data-seat-id="L-${i}-1"></div><div class="seat" data-seat-id="L-${i}-2"></div></div>`;
-          rightBlock.innerHTML += `<div class="desk"><div class="seat" data-seat-id="R-${i}-1"></div><div class="seat" data-seat-id="R-${i}-2"></div></div>`;
+        async function deleteFeedback(event, id) {
+            event.stopPropagation(); 
+            if (confirm("Bạn có chắc chắn muốn xóa phản hồi này không?")) {
+                try {
+                    await feedbackCollectionRef().doc(id).delete();
+                } catch (error) {
+                    console.error("Error deleting feedback: ", error);
+                }
+            }
         }
-        document.querySelectorAll(".seat").forEach((seat) => {
-          seat.addEventListener("dragover", handleDragOver);
-          seat.addEventListener("dragleave", handleDragLeave);
-          seat.addEventListener("drop", handleSeatDrop);
-          seat.addEventListener("dragstart", handleSeatDragStart);
-        });
-        if (unassignedStudentsList) {
-          unassignedStudentsList.addEventListener("dragover", handleDragOver);
-          unassignedStudentsList.addEventListener("dragleave", handleDragLeave);
-          unassignedStudentsList.addEventListener("drop", handleUnassignedDrop);
+
+
+        function initializeSeatingChart() {
+            const leftBlock = document.getElementById('left-desk-block');
+            const rightBlock = document.getElementById('right-desk-block');
+            if(!leftBlock || !rightBlock) return;
+            leftBlock.innerHTML = ''; rightBlock.innerHTML = '';
+            for (let i = 1; i <= 6; i++) {
+                leftBlock.innerHTML += `<div class="desk"><div class="seat" data-seat-id="L-${i}-1"></div><div class="seat" data-seat-id="L-${i}-2"></div></div>`;
+                rightBlock.innerHTML += `<div class="desk"><div class="seat" data-seat-id="R-${i}-1"></div><div class="seat" data-seat-id="R-${i}-2"></div></div>`;
+            }
+            document.querySelectorAll('.seat').forEach(seat => {
+                seat.addEventListener('dragover', handleDragOver);
+                seat.addEventListener('dragleave', handleDragLeave);
+                seat.addEventListener('drop', handleSeatDrop);
+                seat.addEventListener('dragstart', handleSeatDragStart);
+            });
+            if (unassignedStudentsList) {
+                unassignedStudentsList.addEventListener('dragover', handleDragOver);
+                unassignedStudentsList.addEventListener('dragleave', handleDragLeave);
+                unassignedStudentsList.addEventListener('drop', handleUnassignedDrop);
+            }
         }
-      }
-
-      function renderSeatingChart() {
-        if (!unassignedStudentsList) return;
-        document.querySelectorAll(".seat").forEach((s) => {
-          s.innerHTML = "";
-          s.classList.remove("occupied");
-          s.draggable = false;
-          delete s.dataset.studentId;
-        });
-        unassignedStudentsList.innerHTML = "";
-        const unassigned = students.filter((s) => !s.seatId);
-        const assigned = students.filter((s) => s.seatId);
-        unassigned.forEach((student) => {
-          const card = document.createElement("div");
-          card.id = student.id;
-          card.className = "student-card text-center";
-          card.draggable = currentUserRole !== "VIEWER";
-          card.innerHTML = `<div class="student-id">${student.id}</div><div class="student-name text-xs truncate">${student.name}</div>`;
-          card.addEventListener("dragstart", handleDragStart);
-          card.addEventListener("dragend", handleDragEnd);
-          unassignedStudentsList.appendChild(card);
-        });
-        assigned.forEach((student) => {
-          const seat = document.querySelector(
-            `.seat[data-seat-id="${student.seatId}"]`
-          );
-          if (seat) {
-            seat.classList.add("occupied");
-            seat.draggable = currentUserRole !== "VIEWER";
-            seat.dataset.studentId = student.id;
-            seat.innerHTML = `<div class="student-in-seat"><span class="font-bold">${student.id}</span><br>${student.name}</div>`;
-          }
-        });
-      }
-
-      async function handleSeatDrop(event) {
-        event.preventDefault();
-        event.currentTarget.classList.remove("drag-over");
-        const droppedId = event.dataTransfer.getData("text/plain");
-        const targetId = event.currentTarget.dataset.seatId;
-        const studentInSeatId = event.currentTarget.dataset.studentId;
-        const droppedStudent = students.find((s) => s.id === droppedId);
-        if (!droppedStudent) return;
-        const oldSeatId = droppedStudent.seatId;
-        if (studentInSeatId) {
-          const studentInSeat = students.find((s) => s.id === studentInSeatId);
-          if (studentInSeat) studentInSeat.seatId = oldSeatId;
-        } else if (oldSeatId) {
-          const oldSeat = document.querySelector(
-            `.seat[data-seat-id="${oldSeatId}"]`
-          );
-          if (oldSeat) delete oldSeat.dataset.studentId;
+        
+        function renderSeatingChart() {
+            if(!unassignedStudentsList) return;
+            document.querySelectorAll('.seat').forEach(s => { s.innerHTML = ''; s.classList.remove('occupied'); s.draggable = false; delete s.dataset.studentId; });
+            unassignedStudentsList.innerHTML = '';
+            const unassigned = students.filter(s => !s.seatId);
+            const assigned = students.filter(s => s.seatId);
+            unassigned.forEach(student => {
+                const card = document.createElement('div');
+                card.id = student.id;
+                card.className = 'student-card text-center';
+                card.draggable = currentUserRole !== 'VIEWER';
+                card.innerHTML = `<div class="student-id">${student.id}</div><div class="student-name text-xs truncate">${student.name}</div>`;
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+                unassignedStudentsList.appendChild(card);
+            });
+            assigned.forEach(student => {
+                const seat = document.querySelector(`.seat[data-seat-id="${student.seatId}"]`);
+                if (seat) {
+                    seat.classList.add('occupied');
+                    seat.draggable = currentUserRole !== 'VIEWER';
+                    seat.dataset.studentId = student.id;
+                    seat.innerHTML = `<div class="student-in-seat"><span class="font-bold">${student.id}</span><br>${student.name}</div>`;
+                }
+            });
         }
-        droppedStudent.seatId = targetId;
-        await studentsDocRef().set({ students });
-      }
 
-      async function handleUnassignedDrop(event) {
-        event.preventDefault();
-        event.currentTarget.classList.remove("drag-over");
-        const droppedId = event.dataTransfer.getData("text/plain");
-        const droppedStudent = students.find((s) => s.id === droppedId);
-        if (droppedStudent && droppedStudent.seatId) {
-          delete droppedStudent.seatId;
-          await studentsDocRef().set({ students });
+        async function handleSeatDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('drag-over');
+            const droppedId = event.dataTransfer.getData('text/plain');
+            const targetId = event.currentTarget.dataset.seatId;
+            const studentInSeatId = event.currentTarget.dataset.studentId;
+            const droppedStudent = students.find(s => s.id === droppedId);
+            if (!droppedStudent) return;
+            const oldSeatId = droppedStudent.seatId;
+            if (studentInSeatId) {
+                const studentInSeat = students.find(s => s.id === studentInSeatId);
+                if(studentInSeat) studentInSeat.seatId = oldSeatId;
+            } else if (oldSeatId) {
+                 const oldSeat = document.querySelector(`.seat[data-seat-id="${oldSeatId}"]`);
+                 if(oldSeat) delete oldSeat.dataset.studentId;
+            }
+            droppedStudent.seatId = targetId;
+            await studentsDocRef().set({students});
         }
-      }
-
-      const handleDragStart = (event) => {
-        event.dataTransfer.setData("text/plain", event.target.id);
-        setTimeout(() => {
-          const el = document.getElementById(event.target.id);
-          if (el) el.classList.add("dragging");
-        }, 0);
-      };
-      const handleDragEnd = (event) => {
-        const el = document.getElementById(event.target.id);
-        if (el) el.classList.remove("dragging");
-      };
-      const handleDragOver = (event) => {
-        event.preventDefault();
-        event.currentTarget.classList.add("drag-over");
-      };
-      const handleDragLeave = (event) => {
-        event.currentTarget.classList.remove("drag-over");
-      };
-      const handleSeatDragStart = (event) => {
-        const studentId = event.currentTarget.dataset.studentId;
-        if (studentId) {
-          event.dataTransfer.setData("text/plain", studentId);
-          setTimeout(() => event.target.classList.add("dragging"), 0);
+        
+        async function handleUnassignedDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('drag-over');
+            const droppedId = event.dataTransfer.getData('text/plain');
+            const droppedStudent = students.find(s => s.id === droppedId);
+            if (droppedStudent && droppedStudent.seatId) {
+                delete droppedStudent.seatId;
+                await studentsDocRef().set({students});
+            }
         }
-      };
+        
+        const handleDragStart = (event) => {
+            event.dataTransfer.setData('text/plain', event.target.id);
+            setTimeout(() => { const el = document.getElementById(event.target.id); if (el) el.classList.add('dragging') }, 0);
+        };
+        const handleDragEnd = (event) => {
+            const el = document.getElementById(event.target.id);
+            if(el) el.classList.remove('dragging');
+        };
+        const handleDragOver = (event) => {
+            event.preventDefault();
+            event.currentTarget.classList.add('drag-over');
+        };
+        const handleDragLeave = (event) => {
+            event.currentTarget.classList.remove('drag-over');
+        };
+        const handleSeatDragStart = (event) => {
+            const studentId = event.currentTarget.dataset.studentId;
+            if (studentId) {
+                event.dataTransfer.setData('text/plain', studentId);
+                setTimeout(() => event.target.classList.add('dragging'), 0);
+            }
+        };
 
-      document.addEventListener("DOMContentLoaded", initializeSeatingChart);
+        document.addEventListener('DOMContentLoaded', initializeSeatingChart);
     </script>
-  </body>
+</body>
 </html>
+
