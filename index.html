@@ -594,7 +594,7 @@
                   onclick="getAIFeedback()"
                   class="w-full py-3 px-4 rounded-lg text-sm btn btn-ai"
                 >
-                  ✨ Nhận Xét Tuần từ AI
+                  ✨ Nhận Xét Tuần ✨
                 </button>
                 <button
                   id="finalize-week-button"
@@ -2019,7 +2019,7 @@
         const systemPrompt =
           "Bạn là một cố vấn học tập vui vẻ, tích cực. Hãy nhận xét ngắn gọn (3-5 câu) về kết quả thi đua. Giữ giọng văn khích lệ, tập trung vào sự cố gắng. Trả lời bằng tiếng Việt.";
         const userQuery = `Điểm thi đua tuần này: ${scoresText}. Viết nhận xét ngắn gọn, tích cực, chúc mừng tổ cao nhất và động viên các tổ khác.`;
-        const apiKey = "";
+        const apiKey = "AIzaSyCAZvVaSfPlfLFlQoPeLZXfq3xlkWpZpA8";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
         try {
           const response = await fetch(apiUrl, {
