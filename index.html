@@ -594,7 +594,7 @@
                   onclick="getAIFeedback()"
                   class="w-full py-3 px-4 rounded-lg text-sm btn btn-ai"
                 >
-                  ✨ Nhận Xét Tuần ✨
+                  ✨ Nhận Xét Tuần từ AI
                 </button>
                 <button
                   id="finalize-week-button"
@@ -610,6 +610,42 @@
                 >
                   Xóa Sạch Dữ Liệu
                 </button>
+                <div
+                  id="add-student-section"
+                  class="hidden pt-4 border-t border-gray-700 space-y-3"
+                >
+                  <h3 class="text-lg font-semibold text-center">
+                    Thêm Học Sinh Mới
+                  </h3>
+                  <div>
+                    <label for="new-student-name" class="text-sm"
+                      >Tên Học Sinh:</label
+                    >
+                    <input
+                      type="text"
+                      id="new-student-name"
+                      class="input-field w-full mt-1 rounded-md"
+                      placeholder="Võ Thành Mạnh"
+                    />
+                  </div>
+                  <div>
+                    <label for="new-student-group" class="text-sm">Tổ:</label>
+                    <input
+                      type="number"
+                      id="new-student-group"
+                      class="input-field w-full mt-1 rounded-md"
+                      min="1"
+                      max="4"
+                      placeholder="1"
+                    />
+                  </div>
+                  <button
+                    onclick="addStudent()"
+                    class="w-full py-2 px-4 rounded-lg text-sm btn btn-secondary"
+                  >
+                    Thêm Học Sinh
+                  </button>
+                </div>
               </div>
 
               <div
@@ -1294,6 +1330,9 @@
           document
             .getElementById("functions-section")
             .classList.toggle("hidden", isViewer);
+          document
+            .getElementById("add-student-section")
+            .classList.toggle("hidden", !isAdmin);
 
           clearDataButton.classList.toggle("hidden", !isAdmin);
           finalizeWeekButton.classList.toggle("hidden", !isAdmin);
@@ -1540,13 +1579,22 @@
       }
 
       function renderScoringButtons() {
+        const isViewer = currentUserRole === "VIEWER";
         for (let i = 1; i <= 4; i++) {
           const btn = document.getElementById(`score-group-${i}-btn`);
           if (!btn) continue;
-          let canScore = false;
-          if (targetGroupIdForScoring === "ALL") canScore = true;
-          if (targetGroupIdForScoring === i) canScore = true;
-          btn.classList.toggle("hidden", !canScore);
+
+          // Viewer can view any group's score sheet
+          if (isViewer) {
+            btn.classList.remove("hidden");
+            btn.textContent = `Xem Điểm Tổ ${i}`; // Change text for viewer
+          } else {
+            let canScore = false;
+            if (targetGroupIdForScoring === "ALL") canScore = true;
+            if (targetGroupIdForScoring === i) canScore = true;
+            btn.classList.toggle("hidden", !canScore);
+            btn.textContent = `Chấm Điểm Tổ ${i}`; // Original text
+          }
         }
       }
 
@@ -1569,33 +1617,36 @@
         if (!tbody) return;
         tbody.innerHTML = "";
         const isViewer = currentUserRole === "VIEWER";
-        students
-          .filter((s) => s.group === currentScoringGroupId)
-          .forEach((student, index) => {
-            const row = document.createElement("tr");
-            let rowHTML = `<td>${
-              index + 1
-            }</td><td class="text-left font-semibold">${student.name}</td>`;
+        const studentsToDisplay =
+          currentScoringGroupId === "ALL" || isViewer
+            ? students
+            : students.filter((s) => s.group === currentScoringGroupId);
 
-            let totalScore = STARTING_SCORE;
-            const studentScores = detailedScores[student.id] || {};
+        studentsToDisplay.forEach((student, index) => {
+          const row = document.createElement("tr");
+          let rowHTML = `<td>${
+            index + 1
+          }</td><td class="text-left font-semibold">${student.name}</td>`;
 
-            scoreColumns.forEach((col) => {
-              const value = studentScores[col] || "";
-              rowHTML += `<td><input type="number" class="table-input" value="${value}" oninput="handleIndividualScoreChange(this, '${
-                student.id
-              }', '${col}')" min="0" ${isViewer ? "disabled" : ""}></td>`;
-              if (value) totalScore += Number(value) * (pointValues[col] || 0);
-            });
+          let totalScore = STARTING_SCORE;
+          const studentScores = detailedScores[student.id] || {};
 
-            rowHTML += `<td id="total-score-${student.id}" class="font-bold">${totalScore}</td>`;
-            rowHTML += `<td id="xeploai-${student.id}">${getXepLoai(
-              totalScore
-            )}</td>`;
-
-            row.innerHTML = rowHTML;
-            tbody.appendChild(row);
+          scoreColumns.forEach((col) => {
+            const value = studentScores[col] || "";
+            rowHTML += `<td><input type="number" class="table-input" value="${value}" oninput="handleIndividualScoreChange(this, '${
+              student.id
+            }', '${col}')" min="0" ${isViewer ? "disabled" : ""}></td>`;
+            if (value) totalScore += Number(value) * (pointValues[col] || 0);
           });
+
+          rowHTML += `<td id="total-score-${student.id}" class="font-bold">${totalScore}</td>`;
+          rowHTML += `<td id="xeploai-${student.id}">${getXepLoai(
+            totalScore
+          )}</td>`;
+
+          row.innerHTML = rowHTML;
+          tbody.appendChild(row);
+        });
         calculateColumnTotals();
       }
 
@@ -2019,7 +2070,7 @@
         const systemPrompt =
           "Bạn là một cố vấn học tập vui vẻ, tích cực. Hãy nhận xét ngắn gọn (3-5 câu) về kết quả thi đua. Giữ giọng văn khích lệ, tập trung vào sự cố gắng. Trả lời bằng tiếng Việt.";
         const userQuery = `Điểm thi đua tuần này: ${scoresText}. Viết nhận xét ngắn gọn, tích cực, chúc mừng tổ cao nhất và động viên các tổ khác.`;
-        const apiKey = "AIzaSyCAZvVaSfPlfLFlQoPeLZXfq3xlkWpZpA8";
+        const apiKey = "";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
         try {
           const response = await fetch(apiUrl, {
@@ -2084,6 +2135,51 @@
           statusEl.textContent = "Lỗi! Không thể gửi phản hồi.";
           statusEl.classList.remove("hidden", "text-green-400");
           statusEl.classList.add("text-red-400");
+        }
+      }
+
+      async function addStudent() {
+        const nameInput = document.getElementById("new-student-name");
+        const groupInput = document.getElementById("new-student-group");
+
+        const name = nameInput.value.trim();
+        const group = parseInt(groupInput.value, 10);
+
+        if (!name) {
+          alert("Vui lòng nhập tên học sinh.");
+          return;
+        }
+        if (isNaN(group) || group < 1 || group > 4) {
+          alert("Vui lòng nhập số tổ hợp lệ (1-4).");
+          return;
+        }
+
+        // Generate a new unique ID
+        let maxId = 0;
+        students.forEach((s) => {
+          const idNum = parseInt(s.id.replace("HS", ""), 10);
+          if (!isNaN(idNum) && idNum > maxId) {
+            maxId = idNum;
+          }
+        });
+        const newId = `HS${maxId + 1}`;
+
+        const newStudent = {
+          id: newId,
+          name: name,
+          group: group,
+        };
+
+        const updatedStudents = [...students, newStudent];
+
+        try {
+          await studentsDocRef().set({ students: updatedStudents });
+          alert(`Đã thêm thành công học sinh "${name}" vào tổ ${group}.`);
+          nameInput.value = "";
+          groupInput.value = "";
+        } catch (error) {
+          console.error("Lỗi khi thêm học sinh: ", error);
+          alert("Đã xảy ra lỗi. Vui lòng thử lại.");
         }
       }
 
